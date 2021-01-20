@@ -1,0 +1,1023 @@
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>TclDOM</title>
+<link rel="stylesheet" href="tcldom_files/tclxml.css">
+</head><body><div class="refentry">
+<h1 class="title"><a name="id18406">TclDOM</a></h1>
+<h2>Contents</h2>
+<ul>
+<li><a href="#synopsis">Synopsis</a></li>
+<li><a href="#id19031">Description</a></li>
+<li><a href="#id19081">Packages and Namespaces</a></li>
+<li><a href="#id19172">Tokens</a></li>
+<li><a href="#id19233">Document and Node Commands</a></li>
+<li><a href="#id19265">DOM Interfaces</a></li>
+<li><a href="#id19314">Convenience Commands and Methods</a></li>
+<li>
+<a href="#id19362">Commands</a><ul>
+<li>
+<a href="#id19375">::dom::DOMImplementation</a><ul><li><a href="#id19408">Command Options</a></li></ul>
+</li>
+<li><a href="#id20417">::dom::document</a></li>
+<li><a href="#id21537">dom::node</a></li>
+<li><a href="#id22955">dom::element</a></li>
+<li><a href="#id23702">dom::processinginstruction</a></li>
+<li><a href="#id23883">dom::event</a></li>
+</ul>
+</li>
+<li><a href="#id25649">Errors</a></li>
+<li>
+<a href="#id25681">Implementations</a><ul>
+<li>
+<a href="#id25698">Tcl Implementation</a><ul><li><a href="#id25719">Limitations</a></li></ul>
+</li>
+<li>
+<a href="#id25760">libxml2 Implementation</a><ul><li><a href="#id25793">Limitations</a></li></ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="refnamediv">
+<span class="refname">::dom::DOMImplementation</span>, <span class="refname">::dom::hasfeature</span>, <span class="refname">::dom::create</span>, <span class="refname">::dom::destroy</span>, <span class="refname">::dom::parse</span>, <span class="refname">::dom::serialize</span>, <span class="refname">::dom::document</span>, <span class="refname">::dom::documenttype</span>, <span class="refname">::dom::node</span>, <span class="refname">::dom::element</span>, <span class="refname">::dom::event</span>, <span class="refname">::dom::selectNode</span>, <span class="refname">::dom::isNode</span>, <span class="refname">::dom::xinclude</span>, <span class="refname">::dom::prefix2namespaceURI</span>, <span class="refname">::dom::trim</span> — <span class="refpurpose">Tcl language binding for the W3C Document Object Model</span>
+</div>
+<div class="refsynopsisdiv">
+<a name="synopsis"></a><h2>Synopsis</h2>
+<div class="cmdsynopsis" id="id18562">
+<a name="id18562"></a><span class="command" id="id18567"><a name="package_require_dom"></a><tt>package require dom</tt> </span>
+</div>
+<br><span class="pkgsynopsis"><pre>package require dom ?3.2?</pre></span><div class="cmdsynopsis" id="id18602">
+<a name="id18602"></a><span class="command" id="id18606"><a name="__dom__DOMImplementation"></a><tt>::dom::DOMImplementation</tt> </span><em>method</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18632">
+<a name="id18632"></a><span class="command" id="id18635"><a name="__dom__hasfeature"></a><tt>::dom::hasfeature</tt> </span><em>feature</em> <em>version</em>
+</div>
+<div class="cmdsynopsis" id="id18657">
+<a name="id18657"></a><span class="command" id="id18660"><a name="__dom__create"></a><tt>::dom::create</tt> </span>
+</div>
+<div class="cmdsynopsis" id="id18665">
+<a name="id18665"></a><span class="command" id="id18669"><a name="__dom__destroy"></a><tt>::dom::destroy</tt> </span><em>token</em>
+</div>
+<div class="cmdsynopsis" id="id18682">
+<a name="id18682"></a><span class="command" id="id18685"><a name="__dom__parse"></a><tt>::dom::parse</tt> </span><em>xml</em> ?option value...?</div>
+<div class="cmdsynopsis" id="id18713">
+<a name="id18713"></a><span class="command" id="id18716"><a name="__dom__serialize"></a><tt>::dom::serialize</tt> </span><em>token</em> ?option value...?</div>
+<div class="cmdsynopsis" id="id18744">
+<a name="id18744"></a><span class="command" id="id18747"><a name="__dom__document"></a><tt>::dom::document</tt> </span><em>method</em> <em>token</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18780">
+<a name="id18780"></a><span class="command" id="id18782"><a name="__dom__documenttype"></a><tt>::dom::documenttype</tt> </span><em>method</em> <em>token</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18815">
+<a name="id18815"></a><span class="command" id="id18818"><a name="__dom__node"></a><tt>::dom::node</tt> </span><em>method</em> <em>token</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18850">
+<a name="id18850"></a><span class="command" id="id18853"><a name="__dom__element"></a><tt>::dom::element</tt> </span><em>method</em> <em>token</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18885">
+<a name="id18885"></a><span class="command" id="id18888"><a name="__dom__event"></a><tt>::dom::event</tt> </span><em>method</em> <em>token</em> ?args...?</div>
+<div class="cmdsynopsis" id="id18921">
+<a name="id18921"></a><span class="command" id="id18924"><a name="__dom__selectNode"></a><tt>::dom::selectNode</tt> </span><em>token</em> <em>xpath</em> ?option value...?</div>
+<div class="cmdsynopsis" id="id18956">
+<a name="id18956"></a><span class="command" id="id18959"><a name="__dom__isNode"></a><tt>::dom::isNode</tt> </span><em>token</em>
+</div>
+<div class="cmdsynopsis" id="id18973">
+<a name="id18973"></a><span class="command" id="id18976"><a name="__dom__xinclude"></a><tt>::dom::xinclude</tt> </span><em>doc</em>
+</div>
+<div class="cmdsynopsis" id="id18989">
+<a name="id18989"></a><span class="command" id="id18992"><a name="__dom__prefix2namespaceURI"></a><tt>::dom::prefix2namespaceURI</tt> </span><em>node</em> <em>prefix</em>
+</div>
+<div class="cmdsynopsis" id="id19014">
+<a name="id19014"></a><span class="command" id="id19017"><a name="__dom__trim"></a><tt>::dom::trim</tt> </span><em>doc</em>
+</div>
+<h3>Tcl Namespace Usage</h3>
+<br><tt>::dom</tt><br><tt>::dom::tcl</tt><br><tt>::dom::libxml2</tt><p></p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19031"></a>Description</h2>
+<p>TclDOM is a Tcl language binding for the <a href="http://www.w3c.org/DOM/">W3C Document Object Model</a> (DOM).  DOM provides a view of a XML (or HTML) document as a tree structure.  Currently, TclDOM only supports XML documents.</p>
+<p>The package implements most of the DOM Level 1 interfaces and also 
+some Level 2 and Level 3 interfaces.  There are also a number of 
+non-standard commands and methods provided for the convenience of 
+application developers (these are documented).</p>
+<p>The DOM specification should be read in conjunction with this 
+reference manual, as it explains the meaning and purpose of the various 
+interfaces.  This manual is not a tutorial on how to use the DOM.</p>
+<p>TclDOM also provides two implementations of the API:  a pure-Tcl 
+implementation and a C implementation based on the Gnome libxml2 
+library.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19081"></a>Packages and Namespaces</h2>
+<p>TclDOM defines the <tt>dom</tt> package and also a Tcl namespace using that same name.</p>
+<p>Implementations define their own package name and Tcl namespace within the <tt>::dom</tt> Tcl namespace:</p>
+<dl>
+<span class="term">Tcl implementation</span><dd><p>Package <tt>dom::tcl</tt>, Tcl namespace <tt>::dom::tcl</tt>.</p></dd>
+<span class="term">libxml2</span><dd><p>Package <tt>dom::libxml2</tt>, Tcl namespace <tt>::dom::libxml2</tt>.</p></dd>
+</dl>
+<p>Each DOM Document is allocated a Tcl namespace within the <tt>::dom</tt> Tcl namespace.  All storage for the document and commands are defined within that Tcl namespace.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19172"></a>Tokens</h2>
+<p>The TclDOM API uses <em>tokens</em> as identifiers for nodes within 
+the document tree.  This technique has been used to allow alternate 
+implementations of TclDOM to be efficient, while retaining compatibility
+ with the pure-Tcl implementation.</p>
+<p>The format of the token itself as well as the data structure referred to by the token are <em>not</em>
+ public and an application should not rely on these.  Instead, an 
+application should use the accessor methods provided by the API.</p>
+<p>There is no requirement to always use the same token for a node.  In 
+fact, an important performance optimisation for some implementations is 
+to create a new token when a node is accessed, regardless of whether a 
+token has already been issued for that node.  This implies that in order
+ to test whether two tokens refer to the same node it is not sufficient 
+to test the string values of the tokens; the <tt>isSameNode</tt> method must be used for this purpose.  For example,</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>proc NodeCompare1 {A B} {
+    return [string equal $A $B]
+}
+proc NodeCompare2 {A B} {
+    return [$A isSameNode $B]
+}
+</pre></div></pre></div>
+<p>In the above example, <span class="literal">NodeCompare2</span> correctly determines whether its two arguments refer to the same node.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19233"></a>Document and Node Commands</h2>
+<p>Each Document and Node has a Tcl command defined that may be used to 
+control the object.  This command may be used to invoke the methods by 
+the <strong>::dom::document</strong> command (for Documents) or the <strong>::dom::node</strong> command (for all other Nodes).  If a Document' or Node's Tcl command is destroyed then the Document or Node is also destroyed.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19265"></a>DOM Interfaces</h2>
+<p>Each <em>Interface</em> in the DOM specification is implemented with a Tcl command in the <tt>dom</tt>
+ namespace.  A few interfaces have not been mapped to Tcl commands 
+because Tcl already provides the required functionality, for example the
+ <tt>CharacterData</tt> interface.</p>
+<p><em>method</em>s for interfaces are methods (subcommands) of the corresponding Tcl command.</p>
+<p>Each <em>attribute</em> of an interface is a configuration option for an object in the document tree.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19314"></a>Convenience Commands and Methods</h2>
+<p>DOM doesn't always provide an interface, method or attribute for 
+every function required.  For example, until DOM Level 3 for was no 
+standard for creating, parsing and serializing a document.  Sometimes 
+using the standard DOM interface is awkward.  TclDOM provides a number 
+of non-standard features to overcome these problems.</p>
+<p>A major convenience is that each method of the <tt>DOMImplementation</tt> interface is also defined as a command.  For example, rather than using <strong>dom::DOMImplementation create</strong> to create a new document, the shorter command <strong>dom::create</strong> may be used.</p>
+<p>Implementations may also provide direct access to specific features.  Refer to the documentation for a DOM implementation.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19362"></a>Commands</h2>
+<div class="refsect2">
+<h3>
+<a name="id19375"></a><strong>::dom::DOMImplementation</strong>
+</h3>
+<p>The <strong>::dom::DOMImplementation</strong> command implements the <tt>DOMImplementation</tt> DOM interface.  It is used to provide implementation-specific features not explicitly defined in the DOM specification.</p>
+<div class="refsect3">
+<h4>
+<a name="id19408"></a>Command Options</h4>
+<p>The following command options may be used.  These are also available as commands.</p>
+<dl>
+<span class="term"><span class="methodname">hasFeature</span></span><dd>
+<div class="cmdsynopsis" id="id19440">
+<a name="id19440"></a>hasFeature <em>feature</em>
+</div>
+<p>Provides a test for existence of a feature.  Returns <span class="literal">1</span> if a feature is implemented, <span class="literal">0</span> otherwise.</p>
+</dd>
+<span class="term"><span class="methodname">create</span></span><dd>
+<div class="cmdsynopsis" id="id19483">
+<a name="id19483"></a>create <em>type</em>
+</div>
+<p>Creates the root node of a new DOM document.  The document element 
+type may be specified as an argument, in which case that element is 
+created.  The return value is a token referring to the root node of the 
+newly created document.  A Tcl command is also created with the same 
+name as the document's token.  This command is a shortcut for the <strong>::dom::document</strong> command.</p>
+<div class="note"><p>Non-standard method.  DOM Level 2 introduced the <span class="methodname">createDocument</span> method.</p></div>
+</dd>
+<span class="term"><span class="methodname">createDocument</span></span><dd>
+<div class="cmdsynopsis" id="id19537">
+<a name="id19537"></a>createDocument <em>nsURI</em> <em>type</em> <em>doctype</em>
+</div>
+<p>Creates the root node of a new DOM document.  The document element 
+namespace URI and local-name (element type) may be specified as an 
+argument, in which case that element is created.  If the document type 
+is given then the newly created document is configured to use that 
+document type.  The return value is a token referring to the root node 
+of the newly created document.  A Tcl command is also created with the 
+same name as the document's token.  This command is a shortcut for the <strong>::dom::document</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createDocumentType</span></span><dd>
+<div class="cmdsynopsis" id="id19595">
+<a name="id19595"></a>createDocumentType <em>name</em> <em>publicid</em> <em>systemid</em> <em>internaldtd</em>
+</div>
+<p>Creates a Document Type Declaration.  The return value is a token for
+ the newly created document type declaration.  A Tcl command is also 
+created with the same name as the document type's token.  This command 
+is a shortcut for the <strong>::dom::documenttype</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createNode</span></span><dd>
+<div class="cmdsynopsis" id="id19661">
+<a name="id19661"></a>createNode <em>token</em> <em>xpath</em>
+</div>
+<p>May create a node in the document.   <em><em>token</em></em> specifies a context for the XPath expression given by  <em><em>xpath</em></em>.
+  The expression must resolve to a node.  If the node exists then no 
+further action is taken.  Otherwise the node is created.  The token of 
+the matched or newly created node is returned.</p>
+<div class="note"><p>Non-standard method.</p></div>
+</dd>
+<span class="term"><span class="methodname">destroy</span></span><dd>
+<div class="cmdsynopsis" id="id19722">
+<a name="id19722"></a>destroy <em>token</em>
+</div>
+<p>This method frees all data structures associated with a DOM document or node.  The  <em><em>token</em></em> argument must refer to a valid token for any document or any node in the tree of a document.</p>
+<p>When the given token refers to a DOM document then the entire 
+document is destroyed; the Tcl namespace for the document is deleted and
+ all document and node commands are deleted.  All tokens for the 
+document or nodes in the document become invalid.</p>
+<p>When the token refers to a node the node is removed from the tree 
+before it is destroyed.  If the node has children or attributes, they 
+will also be destroyed.  The Tcl command for the node is deleted.</p>
+</dd>
+<span class="term"><span class="methodname">isNode</span></span><dd>
+<div class="cmdsynopsis" id="id19781">
+<a name="id19781"></a>isNode <em>token</em>
+</div>
+<p>Tests whether the given token is a valid token for some DOM node.</p>
+<div class="note"><p>Non-standard method.</p></div>
+</dd>
+<span class="term"><span class="methodname">parse</span></span><dd>
+<div class="cmdsynopsis" id="id19821">
+<a name="id19821"></a>parse <em>xml</em> "<em>option</em> <em>value</em>"</div>
+<p>This method parses XML formatted text given by the  <em><em>xml</em></em>
+ argument and constructs a DOM tree for the document.  The return result
+ is the token of the root node of the newly created document.  The 
+document will also have a Tcl command associated with it, see the <tt>createDocument</tt> method.</p>
+<p>This method uses the <a href="http://tclxml.sourceforge.net/">TclXML</a> package to perform the parsing operation.  The <tt>dom</tt> package itself does not include an XML parser.  TclXML supports the use of multiple parser implementations.  The  <em>-parser</em> may be used to specify which XML parser class to use.</p>
+<p>All options not listed below are passed to the TclXML parser.</p>
+<p>Valid configuration options are:</p>
+<dl>
+<span class="term"><span class="arg">-parser</span> <span class="arg"> "<span class="arg">{}</span> | <span class="arg">libxml2</span> | <span class="arg">tcl</span>"</span></span><dd><p>This
+ option specifies the name of a TclXML parser class to use to parse the 
+XML data.  The given parser class must be registered with the TclXML 
+package.  If an empty string is given then the default parser class is 
+used.  If an explicit value is given and that parser class is not 
+registered then the command will fail, despite the fact that another 
+parser may be available.</p></dd>
+<span class="term"><span class="arg">-progresscommand</span> <span class="arg"><em>script</em></span></span><dd><p>This
+ option specifies a Tcl command to be invoked from time to time while 
+the DOM tree is being constructed.  The script will be invoked after a 
+certain number of element start tags have been processed, given by the  <em>-chunksize</em> option.</p></dd>
+<span class="term"><span class="arg">-chunksize</span> <span class="arg"><em>integer</em></span></span><dd><p>This option specifies how many element start tags to process before invoking the script given by the  <em>-progresscommand</em> option.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">selectNode</span></span><dd>
+<div class="cmdsynopsis" id="id20023">
+<a name="id20023"></a>selectNode <em>token</em> <em>xpath</em> ?option value...?</div>
+<p>Resolves the XPath location path given by  <em><em>xpath</em></em>.   <em><em>token</em></em> is the initial context for the location path.  Returns the resulting nodeset as a (static) Tcl list.</p>
+<p>The following options may be specified:</p>
+<dl>
+<span class="term"> <em>-namespaces</em></span><dd>
+<p>The value for this option is a list of prefix-URI pairs.  Each of 
+these pairs defines an XML Namespace and its prefix for the purposes of 
+evaluating the XPath expression.  The document itself may use a 
+different prefix for the same XML Namespace.</p>
+<p>This option may be repeated, in which case the lists of namespace pairs are merged and all of the XML Namespaces registered.</p>
+</dd>
+</dl>
+<div class="note"><p>Non-standard method.</p></div>
+</dd>
+<span class="term"><span class="methodname">serialize</span></span><dd>
+<div class="cmdsynopsis" id="id20126">
+<a name="id20126"></a>serialize <em>token</em> "<em>option</em> <em>value</em>"</div>
+<p>This method returns the XML formatted text corresponding to the node given by  <em>token</em>.  The text is guaranteed to be a well-formed XML document, unless the  <em>-method</em> option specifies a non-XML output method.</p>
+<p>Valid configuration options are:</p>
+<dl>
+<span class="term"><span class="arg">-method</span> <span class="arg">xml|html|text</span></span><dd><p>Specifies
+ how the document tree is to be serialized as text.  The allowed values 
+correspond to the output methods defined by the XSLT v1.0 W3C 
+Recommendation.  The <span class="literal">xml</span> method produces output that conforms to the XML syntax.  The <span class="literal">html</span> method produces output that conforms to HTML syntax.  The <span class="literal">text</span> method serializes only the text nodes of the document and disables all output escaping.</p></dd>
+<span class="term"><span class="arg">-indent</span> <span class="arg"><em>boolean</em></span></span><dd><p>Specifies
+ that the output is to be "pretty-printed", ie. element content is 
+indented to provide a visual indication of nesting levels.</p></dd>
+<span class="term"><span class="arg">-encoding</span> <span class="arg"><em>encoding</em></span></span><dd><p>Specifies that the output is to be encoded using the given character encoding.  If the encoding is <span class="literal">utf-8</span>
+ (the default) then the output is treated as a string within Tcl.  If 
+any other encoding is specified then the output is treated as a 
+ByteArray object (ie. as binary).</p></dd>
+<span class="term"><span class="arg">-newline</span> <span class="arg"><em>elementlist</em></span></span><dd>
+<p>This option specifies a list of element types for which newline 
+characters will be added before and after the start and end tags for 
+those elements upon serialization.  This option is deprecated: the <span class="arg">-indent</span> option should be used instead.</p>
+<p>White space is significant in XML, so the <tt>dom</tt> package never 
+adds extra white space for purposes of "pretty-printing" the XML source 
+document.  On some platforms, such as VMS, this can actually cause 
+serious problems due to line length limitations.  This option provides 
+the convenience of adding newlines to certain nominated element types 
+for formatting the source into lines.</p>
+<p>Examples:</p>
+<p>Suppose the following DOM document is constructed:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>set doc [::dom::DOMImplementation create]
+set top [::dom::document createElement $doc Root]
+set node [::dom::document createElement $top First]
+::dom::document createElement $node Second
+::dom::document createElement $top First
+</pre></div></pre></div>
+<p>Without the  <em>-newline</em> option the serialized document would be:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>::dom::DOMImplementation serialize $doc
+<div class="computeroutput"><pre>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE Root&gt;
+&lt;Root&gt;&lt;First&gt;&lt;Second/&gt;&lt;/First&gt;&lt;First/&gt;&lt;/Root&gt;
+
+</pre></div>
+</pre></div></pre></div>
+<p>With the  <em>-newline</em> option the serialized document would be:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>::dom::DOMImplementation serialize $doc -newline First
+<div class="computeroutput"><pre>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE Root&gt;
+&lt;Root&gt;
+&lt;First&gt;
+&lt;Second/&gt;
+&lt;/First&gt;
+&lt;First/&gt;
+&lt;/Root&gt;
+
+</pre></div>
+</pre></div></pre></div>
+</dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">trim</span></span><dd>
+<div class="cmdsynopsis" id="id20386">
+<a name="id20386"></a>trim <em>token</em>
+</div>
+<p>This method removes any node containing only white space from the document tree of the node given by  <em><em>token</em></em>.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id20417"></a><strong>::dom::document</strong>
+</h3>
+<p>This command implements the Document interface in the DOM 
+specification.  The most important aspect of this command are its 
+factory methods for creating nodes.</p>
+<p>The methods accepted by this command are as follows:</p>
+<dl>
+<span class="term"><span class="methodname">cget</span></span><dd>
+<div class="cmdsynopsis" id="id20458">
+<a name="id20458"></a><span class="methodname">cget</span><em>token</em> -option</div>
+<p>This method returns the value of the given configuration option.</p>
+</dd>
+<span class="term"><span class="methodname">configure</span></span><dd>
+<div class="cmdsynopsis" id="id20496">
+<a name="id20496"></a><span class="methodname">configure</span><em>token</em> "<em>option</em> <em>value</em>..."</div>
+<p>This method sets the value of the given configuration options.</p>
+<p>Valid configuration options are:</p>
+<dl>
+<span class="term"><span class="arg">-doctype</span></span><dd>
+<p>Specifies the token of the Document Type Declaration node.</p>
+<p>This is a read-only option.  Use the factory method to create a Document Type Declaration node.</p>
+</dd>
+<span class="term"><span class="arg">-implementation</span></span><dd>
+<p>Specifies the token of the document's implementation.</p>
+<p>This is a read-only option.</p>
+</dd>
+<span class="term"><span class="arg">-documentElement</span></span><dd>
+<p>Specifies the token of the document's document element node.  A 
+document node may only have one document element, but may have other 
+types of children (such as comments).</p>
+<p>This is a read-only option.  Use the factory method to create the document element node.</p>
+</dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">createElement</span></span><dd>
+<div class="cmdsynopsis" id="id20622">
+<a name="id20622"></a><span class="methodname">createElement</span><em>token</em> <em>type</em>
+</div>
+<p>This method creates an element node as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.  The new, child element is added as the last child of  <em><em>token</em></em>'s list of children.  The new element's type is given by the  <em><em>type</em></em> argument.  The new element is created with an empty attribute list.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createElementNS</span></span><dd>
+<div class="cmdsynopsis" id="id20697">
+<a name="id20697"></a><span class="methodname">createElementNS</span><em>token</em> <em>nsuri</em> <em>qualname</em>
+</div>
+<p>This method creates an element node in an XML Namespace as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.  The new, child element is added as the last child of  <em><em>token</em></em>'s list of children.  The new element is created in the XML Namespace given by the namespace URI  <em><em>nsuri</em></em>.  The new element's qualifed name (QName) is given by the  <em><em>qualname</em></em> argument.  Qualified names have the form <span class="literal">prefix:local-part</span>.  The new element is created with an empty attribute list.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createDocumentFragment</span></span><dd>
+<div class="cmdsynopsis" id="id20790">
+<a name="id20790"></a><span class="methodname">createDocumentFragment</span><em>token</em>
+</div>
+<p>This method creates a documentFragment node as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createTextNode</span></span><dd>
+<div class="cmdsynopsis" id="id20846">
+<a name="id20846"></a><span class="methodname">createTextNode</span><em>token</em> <em>text</em>
+</div>
+<p>This method creates a textNode node as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.  The new, child textNode is added as the last child of  <em><em>token</em></em>'s list of children.  The new textNode is created with its value set to  <em><em>text</em></em>.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createComment</span></span><dd>
+<div class="cmdsynopsis" id="id20919">
+<a name="id20919"></a><span class="methodname">createComment</span><em>token</em> <em>data</em>
+</div>
+<p>This method creates a comment node as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.  The new, child comment is added as the last child of  <em><em>token</em></em>'s list of children.  The new comment is created with its value set to  <em><em>data</em></em>.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createCDATASection</span></span><dd>
+<div class="cmdsynopsis" id="id20993">
+<a name="id20993"></a><span class="methodname">createCDATASection</span><em>token</em> <em>text</em>
+</div>
+<p>TclDOM does not distinguish between textNodes and CDATASection nodes.
+  Accordingly, this method creates a textNode node as a child of the 
+given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element, document or documentFragment.  The new, child textNode is added as the last child of  <em><em>token</em></em>'s list of children.  The new node is created with its value set to  <em><em>text</em></em> and has the attribute  <em>-cdatasection</em> set to the value <span class="literal">1</span>.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createProcessingInstruction</span></span><dd>
+<div class="cmdsynopsis" id="id21076">
+<a name="id21076"></a><span class="methodname">createProcessingInstruction</span><em>token</em> <em>target</em> <em>data</em>
+</div>
+<p>This method creates a processingInstruction node as a child of the given node specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em>
+ must be a node of type element, document or documentFragment.  The new,
+ child processingInstruction is added as the last child of  <em><em>token</em></em>'s list of children.  The new node is created with its name set to  <em><em>target</em></em> and its value set to  <em><em>data</em></em>.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">createAttribute</span></span><dd>
+<div class="cmdsynopsis" id="id21162">
+<a name="id21162"></a><span class="methodname">createAttribute</span><em>token</em> <em>name</em>
+</div>
+<p>This method creates an attribute node for the given element specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type element.  The new attribute is created with its name set to  <em><em>name</em></em> and an empty value.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::node</strong> command.</p>
+<div class="note"><p>This method is included for completeness with 
+respect to the DOM specification.  The preferred method for setting 
+element attributes is to use the <strong>::dom::element</strong> command.</p></div>
+</dd>
+<span class="term"><span class="methodname">createEntity</span></span><dd>
+<div class="cmdsynopsis" id="id21244">
+<a name="id21244"></a><span class="methodname">createEntity</span><em>token</em>
+</div>
+<p>Not currently implemented.</p>
+</dd>
+<span class="term"><span class="methodname">createEntityReference</span></span><dd>
+<div class="cmdsynopsis" id="id21279">
+<a name="id21279"></a><span class="methodname">createEntityReference</span><em>token</em> <em>name</em>
+</div>
+<p>Not currently implemented.</p>
+</dd>
+<span class="term"><span class="methodname">createEvent</span></span><dd>
+<div class="cmdsynopsis" id="id21320">
+<a name="id21320"></a><span class="methodname">createEvent</span><em>token</em> <em>name</em>
+</div>
+<p>This method creates an event node in the document specified by  <em><em>token</em></em> and returns the new node's token as its result.   <em><em>token</em></em> must be a node of type document.  The event type is specified by  <em><em>name</em></em>.</p>
+<p>A Tcl command is created with the same name as the new node's token.  This command is a shortcut for the <strong>::dom::event</strong> command.</p>
+</dd>
+<span class="term"><span class="methodname">getElementsByTagName</span></span><dd>
+<div class="cmdsynopsis" id="id21387">
+<a name="id21387"></a><span class="methodname">getElementsByTagName</span><em>token</em> <em>name</em>
+</div>
+<p>This method searches the node given by the argument  <em><em>token</em></em> for child elements with a type matching the argument  <em><em>name</em></em>.  The name <span class="literal">*</span> matches all elements.  All descendants of  <em><em>token</em></em>
+ are searched.  This method returns a "live-list"; the return result of 
+this method is the name of a Tcl variable, the content of which is a Tcl
+ list containing tokens for all elements that match.</p>
+</dd>
+<span class="term"><span class="methodname">dtd</span></span><dd>
+<div class="cmdsynopsis" id="id21450">
+<a name="id21450"></a><span class="methodname">dtd</span>validate</div>
+<p>This method performs DTD validation upon the document.  If the method
+ returns successfully, then the document is valid.  Otherwise the 
+document is invalid and the error returned contains the reason.</p>
+</dd>
+<span class="term"><span class="methodname">schema</span></span><dd>
+<div class="cmdsynopsis" id="id21483">
+<a name="id21483"></a><span class="methodname"><em>submethod</em></span> ?<em>args</em>...?</div>
+<p>This method performs XML Schema validation upon the document.  Schema
+ validation is performed in two steps.  First the document is compiled 
+into a schema document.  Second, the schema document is used to 
+schema-validate an instance document.</p>
+<p>Example:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>set schema [dom::parse $XML]
+$schema schema compile
+set instance [dom::parse $XML2]
+$schema schema validate $instance
+</pre></div></pre></div>
+<p>If the document is changed after compiling, then schema document must be recompiled.</p>
+</dd>
+</dl>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id21537"></a><strong>dom::node</strong>
+</h3>
+<p>This command implements generic functions for DOM nodes.</p>
+<p>The methods accepted by this command are as follows:</p>
+<dl>
+<span class="term"><span class="methodname">cget</span></span><dd>
+<div class="cmdsynopsis" id="id21577">
+<a name="id21577"></a><span class="methodname">cget</span><em>token</em> option</div>
+<p>This method returns the value of the given configuration option for the node given by  <em><em>token</em></em>.</p>
+</dd>
+<span class="term"><span class="methodname">configure</span></span><dd>
+<div class="cmdsynopsis" id="id21620">
+<a name="id21620"></a><span class="methodname">configure</span><em>token</em> "<em>option</em> <em>value</em>..."</div>
+<p>This method sets the value of the given configuration option for the node given by  <em><em>token</em></em>.</p>
+<p>Valid configuration options are as follows:</p>
+<dl>
+<span class="term"><span class="arg">-nodeName</span></span><dd>
+<p>Returns the node name.  This is a read-only option.</p>
+<p>The DOM specification gives the meaning of names for different types of nodes.  For example, the  <em>-nodeName</em> option of an element node is the element type.</p>
+</dd>
+<span class="term"><span class="arg">-nodeType</span></span><dd><p>Returns the type of the node given by  <em><em>token</em></em>.  This is a read-only option.</p></dd>
+<span class="term"> <em>-parentNode</em></span><dd><p>Returns the parent node of the node given by  <em><em>token</em></em>.  This is a read-only option.</p></dd>
+<span class="term"> <em>-childNodes</em></span><dd><p>Returns the name of a Tcl variable which contains a list of the children of the node given by  <em><em>token</em></em>.  The variable contains the "live" list of children.  This is a read-only option.</p></dd>
+<span class="term"> <em>-firstChild</em></span><dd><p>Returns the first child node of the node given by  <em><em>token</em></em>.  This is a read-only option.</p></dd>
+<span class="term"> <em>-lastChild</em></span><dd><p>Returns the last child node of the node given by  <em><em>token</em></em>.  This is a read-only option.</p></dd>
+<span class="term"> <em>-previousSibling</em></span><dd><p>Returns the 
+parent's child node which appears before this node.  If this child is 
+the first child of its parent then returns an empty string.  This is a 
+read-only option.</p></dd>
+<span class="term"> <em>-nextSibling</em></span><dd><p>Returns the 
+parent's child node which appears after this node.  If this child is the
+ last child of its parent then returns an empty string.  This is a 
+read-only option.</p></dd>
+<span class="term"> <em>-attributes</em></span><dd><p>Returns the name 
+of a Tcl array variable which contains the attribute list for an element
+ node.  If the node is not an element type node then returns an empty 
+string.  The indices of the array are attribute names, and the values of
+ the array elements are their corresponding attribute values.  This is a
+ read-only option.</p></dd>
+<span class="term"> <em>-nodeValue</em><span class="arg"><em>data</em></span></span><dd><p>Specifies
+ the value of a node.  The DOM specification gives the meaning of values
+ for different types of nodes.  For example, the  <em>-nodeValue</em> option of a textNode node is the node's text.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">insertBefore</span></span><dd>
+<div class="cmdsynopsis" id="id21912">
+<a name="id21912"></a><span class="methodname">insertBefore</span><em>token</em> <em>newchild</em> <em>refchild</em>
+</div>
+<p>This method removes the node given by  <em><em>newchild</em></em> from its parent.  If no  <em><em>refchild</em></em> argument is given then  <em><em>newchild</em></em> is appended to  <em><em>token</em></em>'s list of children.  If the  <em><em>refchild</em></em> argument is given then this method adds  <em><em>newchild</em></em> as a child of  <em><em>token</em></em>.  The new child node is positioned before the node  <em><em>refchild</em></em> in  <em><em>token</em></em>'s list of children.  Returns an empty string.</p>
+</dd>
+<span class="term"><span class="methodname">replaceChild</span></span><dd>
+<div class="cmdsynopsis" id="id22008">
+<a name="id22008"></a><span class="methodname">replaceChild</span><em>token</em> <em>newchild</em> <em>oldchild</em>
+</div>
+<p>This method removes the node given by  <em><em>newchild</em></em> from its parent.  It then also removes the node given by  <em><em>oldchild</em></em> from  <em><em>token</em></em>.   <em><em>newchild</em></em> is then added as a child of  <em><em>token</em></em> in  <em><em>oldchild</em></em>'s original position in the list of children.  The method returns the token  <em><em>oldchild</em></em>, which will now have no parent.</p>
+</dd>
+<span class="term"><span class="methodname">removeChild</span></span><dd>
+<div class="cmdsynopsis" id="id22092">
+<a name="id22092"></a><span class="methodname">removeChild</span><em>token</em> <em>oldchild</em>
+</div>
+<p>This method removes the node given by  <em><em>oldchild</em></em> from its parent,  <em><em>token</em></em>.  The method returns the token  <em><em>oldchild</em></em>, which will now have no parent.</p>
+</dd>
+<span class="term"><span class="methodname">appendChild</span></span><dd>
+<div class="cmdsynopsis" id="id22148">
+<a name="id22148"></a><span class="methodname">appendChild</span><em>token</em> <em>newchild</em>
+</div>
+<p>This method removes the node given by  <em><em>newchild</em></em> from its parent.   <em><em>newchild</em></em> is then appended to the end of the list of children for node  <em><em>token</em></em>.  The method returns the token  <em><em>newchild</em></em>.</p>
+</dd>
+<span class="term"><span class="methodname">hasChildNodes</span></span><dd>
+<div class="cmdsynopsis" id="id22210">
+<a name="id22210"></a><span class="methodname">hasChildNodes</span><em>token</em>
+</div>
+<p>Returns <span class="literal">1</span> if the given node has any child nodes, <span class="literal">0</span> otherwise.</p>
+</dd>
+<span class="term"><span class="methodname">isSameNode</span></span><dd>
+<div class="cmdsynopsis" id="id22250">
+<a name="id22250"></a><span class="methodname">isSameNode</span><em>token</em> <em>ref</em>
+</div>
+<p>Returns <span class="literal">1</span> if the given node is the same node as the node given by the <span class="arg"><span class="literal">ref</span></span> token, <span class="literal">0</span> otherwise.</p>
+</dd>
+<span class="term"><span class="methodname">cloneNode</span></span><dd>
+<div class="cmdsynopsis" id="id22303">
+<a name="id22303"></a><span class="methodname">cloneNode</span><em>token</em> <em>deep</em>
+</div>
+<p>This method makes a copy the node given by  <em><em>token</em></em>.  If the argument  <em><em>deep</em></em> is not specified or has the value <span class="literal">0</span> then only the node itself is copied, not its children.  If the argument  <em><em>deep</em></em> has the value <span class="literal">1</span> then  <em><em>token</em></em>'s
+ children are also copied recursively.  This method returns the token of
+ the newly created node.  This new node will have no parent.</p>
+</dd>
+<span class="term"><span class="methodname">children</span></span><dd>
+<div class="cmdsynopsis" id="id22375">
+<a name="id22375"></a><span class="methodname">children</span><em>token</em>
+</div>
+<p>This is a convenience method which returns the list of child nodes for the given node as a (static) Tcl list.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">parent</span></span><dd>
+<div class="cmdsynopsis" id="id22415">
+<a name="id22415"></a><span class="methodname">parent</span><em>token</em>
+</div>
+<p>This is a convenience method which returns the parent node for the given node.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">path</span></span><dd>
+<div class="cmdsynopsis" id="id22453">
+<a name="id22453"></a><span class="methodname">path</span><em>token</em>
+</div>
+<p>Returns a Tcl list of the ancestor nodes of the given node, starting with the root node.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">createNode</span></span><dd>
+<div class="cmdsynopsis" id="id22491">
+<a name="id22491"></a><span class="methodname">createNode</span><em>token</em> <em>xpath</em>
+</div>
+<p>May create nodes in order to satisfy the given XPath location path.  The initial context for the location path is the node <span class="arg"><em>token</em></span>.  For more detail, see the <strong>::dom::createNode</strong> command.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">selectNode</span></span><dd>
+<div class="cmdsynopsis" id="id22548">
+<a name="id22548"></a><span class="methodname">selectNode</span><em>token</em> <em>xpath</em>
+</div>
+<p>Returns a (static) Tcl list of nodes selected by the XPath location path <span class="arg"><em>xpath</em></span>.  The initial context for the location path is the node  <span class="arg"><em>token</em></span>.  For more detail, see the <strong>::dom::selectNode</strong> command.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">stringValue</span></span><dd>
+<div class="cmdsynopsis" id="id22609">
+<a name="id22609"></a><span class="methodname">stringValue</span><em>token</em>
+</div>
+<p>Returns the string value of the node given by <span class="arg"><em>token</em></span>.
+  The string value of a node is defined by the XPath specification: for 
+element nodes it is the concatenation of the string values of all 
+descendant text nodes, for text nodes it is the node's character data 
+value, for attribute nodes it is the attribute value, for comment nodes 
+it is the comment data and for processing instruction nodes it is the PI
+ data.</p>
+<p>This is not a standard DOM method for this interface.</p>
+</dd>
+<span class="term"><span class="methodname">addEventListener</span></span><dd>
+<div class="cmdsynopsis" id="id22658">
+<a name="id22658"></a><span class="methodname">addEventListener</span><em>token</em> <em>type</em> <em>listener</em> ?option value...?</div>
+<p>Register an event listener for the node given by <span class="arg"><em>token</em></span> listening for events of type  <span class="arg"><em>type</em></span>.  The event mechanism functions as described in the W3C DOM Level 2 Event module.</p>
+<p>When an event of type <span class="arg"><em>type</em></span> occurs the script  <span class="arg"><em>listener</em></span> is evaluated, in the global context.  The token of the event node is appended to the script.</p>
+<p>If the <span class="arg"><em>listener</em></span> argument is omitted then the listener for the given event type is returned.</p>
+<p>Valid options are:</p>
+<dl>
+<span class="term"><span class="arg">-usecapture</span> <span class="arg"><em>boolean</em></span></span><dd><p>If true the listener is triggered in the event capturing phase.  If false the listener is triggered in the event bubbling phase.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">removeEventListener</span></span><dd>
+<div class="cmdsynopsis" id="id22789">
+<a name="id22789"></a><span class="methodname">removeEventListener</span><em>token</em> <em>type</em> <em>listener</em> ?option value...?</div>
+<p>Removes an event listener previously registered for the node given by <span class="arg"><em>token</em></span> listening for events of type  <span class="arg"><em>type</em></span>.</p>
+<p>Valid options are:</p>
+<dl>
+<span class="term"><span class="arg">-usecapture</span> <span class="arg"><em>boolean</em></span></span><dd><p>If true the capturing listener is removed.  If false the bubbling listener is removed.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">dispatchEvent</span></span><dd>
+<div class="cmdsynopsis" id="id22893">
+<a name="id22893"></a><span class="methodname">dispatchEvent</span><em>token</em> <em>event</em>
+</div>
+<p>Dispatches the event given by <span class="arg"><em>event</em></span> with target node  <span class="arg"><em>token</em></span>.
+  The event mechanism functions as described in the W3C DOM Level 2 
+Event module.  The event enters the capturing phase first, followed by 
+the bubbling phase.  During each phase any event listeners registered 
+for the same event type as the event  <span class="arg"><em>event</em></span> are triggered; their script is evaluated.  Unless the script invokes the <tt>stopPropagation</tt> method of the <strong>dom::event</strong>
+ command, all registered event listeners will be triggered.  The order 
+in which listeners registered at a particular node for a particular 
+phase are triggered is undefined.</p>
+</dd>
+</dl>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id22955"></a><strong>dom::element</strong>
+</h3>
+<p>This command provides functions for element type nodes.</p>
+<p>Valid methods for this command are as follows:</p>
+<dl>
+<span class="term"><span class="methodname">cget</span></span><dd>
+<div class="cmdsynopsis" id="id22995">
+<a name="id22995"></a><span class="methodname">cget</span><em>token</em> <em>option</em>
+</div>
+<p>This method returns the current setting of configuration options for an element.  See the <span class="methodname">configure</span> method for the list of valid configuration options.</p>
+</dd>
+<span class="term"><span class="methodname">configure</span></span><dd>
+<div class="cmdsynopsis" id="id23041">
+<a name="id23041"></a><span class="methodname">configure</span><em>token</em> "<em>option</em> <em>value</em>..."</div>
+<p>This method sets configuration options for an element.  Note that element type nodes only have read-only options.</p>
+<p>Valid configuration options are as follows:</p>
+<dl>
+<span class="term"> <em>-tagName</em><span class="arg"><em>name</em></span></span><dd>The tag name, or element type, of this element.</dd>
+<span class="term"> <em>-empty</em><span class="arg"><em>boolean</em></span></span><dd>
+<p>Sets whether this element was specified as an empty element when the 
+document was parsed.  That is, XML empty element syntax such as <span class="literal">&lt;Empty/&gt;</span> was used.</p>
+<p>This option has no effect upon output (serialization) of the XML 
+document.  Empty element syntax is automatically used where appropriate.</p>
+</dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">getAttribute</span></span><dd>
+<div class="cmdsynopsis" id="id23156">
+<a name="id23156"></a><span class="methodname">getAttribute</span><em>token</em> <em>name</em>
+</div>
+<p>This method returns the attribute value of the attribute given by  <em><em>name</em></em>.  If the attribute does not exist, then an empty string is returned.</p>
+</dd>
+<span class="term"><span class="methodname">setAttribute</span></span><dd>
+<div class="cmdsynopsis" id="id23203">
+<a name="id23203"></a><span class="methodname">setAttribute</span><em>token</em> <em>name</em> <em>value</em>
+</div>
+<p>This method sets the attribute value of the attribute given by  <em><em>name</em></em>.  If the attribute already exists then its value is replaced, otherwise the attribute is created.</p>
+</dd>
+<span class="term"><span class="methodname">removeAttribute</span></span><dd>
+<div class="cmdsynopsis" id="id23258">
+<a name="id23258"></a><span class="methodname">removeAttribute</span><em>token</em> <em>name</em>
+</div>
+<p>This method deletes the attribute given by  <em><em>name</em></em>.  If the attribute does not exist then the method has no effect.</p>
+</dd>
+<span class="term"><span class="methodname">getAttributeNode</span></span><dd>
+<div class="cmdsynopsis" id="id23306">
+<a name="id23306"></a><span class="methodname">getAttributeNode</span><em>token</em> <em>name</em>
+</div>
+<p>Not implemented.</p>
+</dd>
+<span class="term"><span class="methodname">setAttributeNode</span></span><dd>
+<div class="cmdsynopsis" id="id23348">
+<a name="id23348"></a><span class="methodname">setAttributeNode</span><em>token</em> <em>name</em>
+</div>
+<p>Not implemented.</p>
+</dd>
+<span class="term"><span class="methodname">removeAttributeNode</span></span><dd>
+<div class="cmdsynopsis" id="id23389">
+<a name="id23389"></a><span class="methodname">removeAttributeNode</span><em>token</em> <em>name</em>
+</div>
+<p>Not implemented.</p>
+</dd>
+<span class="term"><span class="methodname">getAttributeNS</span></span><dd>
+<div class="cmdsynopsis" id="id23430">
+<a name="id23430"></a><span class="methodname">getAttributeNS</span><em>token</em> <em>ns</em> <em>name</em>
+</div>
+<p>This method returns the attribute value of the attribute given by  <em><em>name</em></em> in the XML namespace <span class="arg"><em>ns</em></span>.  If the attribute does not exist, then an empty string is returned.</p>
+</dd>
+<span class="term"><span class="methodname">setAttributeNS</span></span><dd>
+<div class="cmdsynopsis" id="id23489">
+<a name="id23489"></a><span class="methodname">setAttributeNS</span><em>token</em> <em>ns</em> <em>name</em> <em>value</em>
+</div>
+<p>This method sets the attribute value of the attribute given by  <em><em>name</em></em> in the XML namespace <span class="arg"><em>ns</em></span>.  If the attribute already exists then its value is replaced, otherwise the attribute is created.</p>
+</dd>
+<span class="term"><span class="methodname">removeAttributeNS</span></span><dd>
+<div class="cmdsynopsis" id="id23557">
+<a name="id23557"></a><span class="methodname">removeAttributeNS</span><em>token</em> <em>ns</em> <em>name</em>
+</div>
+<p>This method deletes the attribute given by  <em><em>name</em></em> in the XML namespace <span class="arg"><em>ns</em></span>.  If the attribute does not exist then the method has no effect.</p>
+</dd>
+<span class="term"><span class="methodname">getElementsByTagName</span></span><dd>
+<div class="cmdsynopsis" id="id23616">
+<a name="id23616"></a><span class="methodname">getElementsByTagName</span><em>token</em> <em>name</em>
+</div>
+<p>This method searches the node given by the argument  <em><em>token</em></em> for descendant child elements with a type matching the argument  <em><em>name</em></em>.  The wildcard character <span class="literal">*</span>
+ matches any element type.  The return result is a "live-list" which is 
+represented by a Tcl variable.  This method returns the name of the Tcl 
+variable that contains the list of tokens that match.</p>
+</dd>
+<span class="term"><span class="methodname">normalize</span></span><dd>
+<div class="cmdsynopsis" id="id23675">
+<a name="id23675"></a><span class="methodname">normalize</span><em>token</em>
+</div>
+<p>This method recursively coalesces textNodes within the children of 
+the given node.  textNodes which are adjacent in the DOM tree cannot be 
+distinguished in the serialized XML document.</p>
+</dd>
+</dl>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id23702"></a><strong>dom::processinginstruction</strong>
+</h3>
+<p>This command provides functions for processingInstruction type nodes.</p>
+<p>Valid methods for this command are as follows:</p>
+<dl>
+<span class="term"><span class="methodname">cget</span></span><dd>
+<div class="cmdsynopsis" id="id23741">
+<a name="id23741"></a><span class="methodname">cget</span><em>token</em> <em>option</em>
+</div>
+<p>This method returns the current setting of configuration options for an element.  See the <span class="methodname">configure</span> method for the list of valid configuration options.</p>
+</dd>
+<span class="term"><span class="methodname">configure</span></span><dd>
+<div class="cmdsynopsis" id="id23787">
+<a name="id23787"></a><span class="methodname">configure</span><em>token</em> "<em>option</em> <em>value</em>..."</div>
+<p>This method sets configuration options for a processing instruction.</p>
+<p>Valid configuration options are as follows:</p>
+<dl>
+<span class="term"> <em>-target</em><span class="arg"><em>name</em></span></span><dd>This option sets the target of the processing instruction.  This is a read-only configuration option.</dd>
+<span class="term"> <em>-data</em><span class="arg"><em>data</em></span></span><dd><p>This option sets the data of the processing instruction.</p></dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id23883"></a><strong>dom::event</strong>
+</h3>
+<p>This command provides functions for event type nodes.</p>
+<p>Valid methods for this command are as follows:</p>
+<dl>
+<span class="term"><span class="methodname">cget</span></span><dd>
+<div class="cmdsynopsis" id="id23922">
+<a name="id23922"></a><span class="methodname">cget</span><em>token</em>
+</div>
+<p>This method retrieves configuration options for an event.</p>
+<p>Valid configuration options are as follows:</p>
+<dl>
+<span class="term"> <em>-altKey</em></span><dd>This option determines whether the ALT modifier key has been specified for this event.</dd>
+<span class="term"> <em>-attrName</em></span><dd>This option gives the name of the attribute associated with this event.</dd>
+<span class="term"> <em>-bubbles</em></span><dd>This option determines whether the event uses the bubbling phase.</dd>
+<span class="term"> <em>-button</em></span><dd>This option gives the button pressed for this event.</dd>
+<span class="term"> <em>-cancelable</em></span><dd>This option determines whether the event may be cancelled.</dd>
+<span class="term"> <em>-clientX</em></span><dd>This option gives the window X coordinate for this event.</dd>
+<span class="term"> <em>-clientY</em></span><dd>This option gives the window Y coordinate for this event.</dd>
+<span class="term"> <em>-ctrlKey</em></span><dd>This option determines whether the control modifier key has been specified for this event.</dd>
+<span class="term"> <em>-currentNode</em></span><dd>The current node of the capturing or bubbling phase.</dd>
+<span class="term"> <em>-detail</em></span><dd>This option gives an additional information item for the event, for example the key that was pressed or the button number.</dd>
+<span class="term"> <em>-eventPhase</em></span><dd>The current phase of the event.</dd>
+<span class="term"> <em>-metaKey</em></span><dd>This option determines whether the META modifier key has been specified for this event.</dd>
+<span class="term"> <em>-newValue</em></span><dd>This option gives the new value of a node.</dd>
+<span class="term"> <em>-prevValue</em></span><dd>This option gives the previous value of a node.</dd>
+<span class="term"> <em>-relatedNode</em></span><dd>This option gives a related node for this event.  See the W3C DOM Level 2 Event module specification for further details.</dd>
+<span class="term"> <em>-screenX</em></span><dd>This option gives the screen X coordinate for this event.</dd>
+<span class="term"> <em>-screenY</em></span><dd>This option gives the screen Y coordinate for this event.</dd>
+<span class="term"> <em>-shiftKey</em></span><dd>This option determines whether the shift modifier key has been specified for this event.</dd>
+<span class="term"> <em>-target</em></span><dd>The node that is the target of this event.</dd>
+<span class="term"> <em>-timeStamp</em></span><dd>
+<p>This option gives the time at which the event was posted.  The value 
+is the number of milliseconds since the epoch, which is compatible with 
+the Tcl <strong>clock</strong> command.  </p>
+<div class="note">The implementation of this method depends on the <span class="methodname">Tcl_GetTime</span>
+ function.This function only became publically available in Tcl 8.4.  If
+ a version of Tcl prior to 8.4 is being used, then this option will have
+ the value <span class="literal">0</span>.</div>
+</dd>
+<span class="term"> <em>-type</em></span><dd>The type of this event.</dd>
+<span class="term"> <em>-view</em></span><dd>This option gives whether the view of the event.</dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">configure</span></span><dd>
+<div class="cmdsynopsis" id="id24296">
+<a name="id24296"></a><span class="methodname">configure</span><em>token</em> "<em>option</em> <em>value</em>..."</div>
+<p>This method sets the configuration options for an event.  However, all event options are read-only.  See the <span class="methodname">cget</span> method for the list of valid configuration options.</p>
+</dd>
+<span class="term"><span class="methodname">stopPropagation</span></span><dd>
+<div class="cmdsynopsis" id="id24354">
+<a name="id24354"></a><span class="methodname">stopPropagation</span><em>token</em>
+</div>
+<p>This method cancels further propagation of the event.</p>
+<div class="note">Invoking this method does not prevent event listeners at the current node from being triggered.</div>
+</dd>
+<span class="term"><span class="methodname">preventDefault</span></span><dd>
+<div class="cmdsynopsis" id="id24392">
+<a name="id24392"></a><span class="methodname">preventDefault</span><em>token</em>
+</div>
+<p>This method stops the default action for this event from occurring.</p>
+</dd>
+<span class="term"><span class="methodname">initEvent</span></span><dd>
+<div class="cmdsynopsis" id="id24426">
+<a name="id24426"></a><span class="methodname">initEvent</span><em>token</em> <em>type</em> <em>bubbles</em> <em>cancelable</em>
+</div>
+<p>Initialise the event.</p>
+<p><span class="arg"><em>type</em></span> gives the type of the event.  
+Any of the event types defined by the W3C DOM Level 2 Event module may 
+be specified, or a user-defined event type may be used instead.</p>
+<p><span class="arg"><em>bubbles</em></span> indicates whether the event will enter the bubbling phase after the capturing phase.   <span class="arg"><em>cancelable</em></span> indicates whether the event may be cancelled.</p>
+</dd>
+<span class="term"><span class="methodname">initUIEvent</span></span><dd>
+<div class="cmdsynopsis" id="id24505">
+<a name="id24505"></a><span class="methodname">initUIEvent</span><em>token</em> <em>type</em> <em>bubbles</em> <em>cancelable</em> <em>view</em> <em>detail</em>
+</div>
+<p>Initialise a user interface event.  See <tt>initEvent</tt> for further information.</p>
+<p><span class="arg"><em>view</em></span> gives the view for the event (not supported by TclDOM).   <span class="arg"><em>detail</em></span> provides extra data for the event.</p>
+</dd>
+<span class="term"><span class="methodname">initMouseEvent</span></span><dd>
+<div class="cmdsynopsis" id="id24593">
+<a name="id24593"></a><span class="methodname">initMouseEvent</span><em>token</em> <em>type</em> <em>bubbles</em> <em>cancelable</em> <em>view</em> <em>detail</em> <em>screenX</em> <em>screenY</em> <em>clientX</em> <em>clientY</em> <em>ctrlKey</em> <em>altKey</em> <em>shiftKey</em> <em>metaKey</em> <em>button</em> <em>relatedNode</em>
+</div>
+<p>Initialise a mouse event.  See <tt>initUIEvent</tt> for further information.</p>
+<p><span class="arg"><em>screenX</em></span> and  <span class="arg"><em>screenY</em></span> give the coordinates at which the event occurred relative to the screen.   <span class="arg"><em>screenX</em></span> and  <span class="arg"><em>screenY</em></span> give the coordinates at which the event occurred relative to the window.</p>
+<p><span class="arg"><em>ctrlKey</em></span>,  <span class="arg"><em>altKey</em></span>,  <span class="arg"><em>shiftKey</em></span>,  <span class="arg"><em>metaKey</em></span> indicate whether the respective modifier key was pressed when the event occurred.</p>
+<p><span class="arg"><em>button</em></span> indicates which button, if any, was pressed when the event occurred.</p>
+<p><span class="arg"><em>relatedNode</em></span> specifies that a DOM node is associated with the event.</p>
+</dd>
+<span class="term"><span class="methodname">initMutationEvent</span></span><dd>
+<div class="cmdsynopsis" id="id24802">
+<a name="id24802"></a><span class="methodname">initMutationEvent</span><em>token</em> <em>type</em> <em>bubbles</em> <em>cancelable</em> <em>relatedNode</em> <em>prevValue</em> <em>newValue</em> <em>attrName</em>
+</div>
+<p>Initialise a tree mutation event event.  See <tt>initEvent</tt> for further information.</p>
+<p><span class="arg"><em>relatedNode</em></span> specifies a DOM node to associate with the event.   <span class="arg"><em>prevValue</em></span> gives the previous value of the node.   <span class="arg"><em>newValue</em></span> gives the new value of the node.   <span class="arg"><em>attrName</em></span> gives the name of the attribute where the event is modifying an attribute value.</p>
+</dd>
+<span class="term"><span class="methodname">postUIEvent</span></span><dd>
+<div class="cmdsynopsis" id="id24918">
+<a name="id24918"></a><span class="methodname">postUIEvent</span><em>token</em> <em>type</em> ?option <em>value</em>...?</div>
+<p>Non-standard convenience method that handles posting an user interface event with <span class="arg"><em>token</em></span> as the target node.  This method performs the following functions:</p>
+<ol>
+<li><p>Create an event node,</p></li>
+<li><p>Initialise the event node (using default values where required),</p></li>
+<li><p>Dispatch the event,</p></li>
+<li><p>Destroy the event node.</p></li>
+</ol>
+<p><span class="arg"><em>type</em></span> gives the event type.</p>
+<p>The following options are valid:</p>
+<dl>
+<span class="term"> <em>-bubbles</em></span><dd><p>Indicates whether the event bubbles.</p></dd>
+<span class="term"> <em>-cancelable</em></span><dd><p>Indicates whether the event can be cancelled.</p></dd>
+<span class="term"> <em>-view</em></span><dd><p>The view.</p></dd>
+<span class="term"> <em>-detail</em></span><dd><p>Extra data for the event.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">postMouseEvent</span></span><dd>
+<div class="cmdsynopsis" id="id25096">
+<a name="id25096"></a><span class="methodname">postMouseEvent</span><em>token</em> <em>type</em> ?option <em>value</em>...?</div>
+<p>Non-standard convenience method that handles posting a mouse event with <span class="arg"><em>token</em></span> as the target node.  This method performs the following functions:</p>
+<ol>
+<li><p>Create an event node,</p></li>
+<li><p>Initialise the event node (using default values where required),</p></li>
+<li><p>Dispatch the event,</p></li>
+<li><p>Destroy the event node.</p></li>
+</ol>
+<p><span class="arg"><em>type</em></span> gives the event type.</p>
+<p>The following options are valid:</p>
+<dl>
+<span class="term"> <em>-bubbles</em></span><dd><p>Indicates whether the event bubbles.</p></dd>
+<span class="term"> <em>-cancelable</em></span><dd><p>Indicates whether the event can be cancelled.</p></dd>
+<span class="term"> <em>-view</em></span><dd><p>The view.</p></dd>
+<span class="term"> <em>-detail</em></span><dd><p>Extra data for the event.</p></dd>
+<span class="term"> <em>-screenX</em></span><dd><p>Gives the screen X coordinate.</p></dd>
+<span class="term"> <em>-screenY</em></span><dd><p>Gives the screen Y coordinate.</p></dd>
+<span class="term"> <em>-clientX</em></span><dd><p>Gives the window X coordinate.</p></dd>
+<span class="term"> <em>-clientY</em></span><dd><p>Gives the window Y coordinate.</p></dd>
+<span class="term"> <em>-ctrlKey</em></span><dd><p>Indicates whether the control modifier key was pressed.</p></dd>
+<span class="term"> <em>-altKey</em></span><dd><p>Indicates whether the ALT modifier key was pressed.</p></dd>
+<span class="term"> <em>-shiftKey</em></span><dd><p>Indicates whether the shift modifier key was pressed.</p></dd>
+<span class="term"> <em>-metaKey</em></span><dd><p>Indicates whether the meta modifier key was pressed.</p></dd>
+<span class="term"> <em>-button</em></span><dd><p>Gives the button pressed.</p></dd>
+<span class="term"> <em>-relatedNode</em></span><dd><p>Gives a node to associate with the event.</p></dd>
+</dl>
+</dd>
+<span class="term"><span class="methodname">postMutationEvent</span></span><dd>
+<div class="cmdsynopsis" id="id25444">
+<a name="id25444"></a><span class="methodname">postMutationEvent</span><em>token</em> <em>type</em> ?option <em>value</em>...?</div>
+<p>Non-standard convenience method that handles posting a mutation event with <span class="arg"><em>token</em></span> as the target node.  This method performs the following functions:</p>
+<ol>
+<li><p>Create an event node,</p></li>
+<li><p>Initialise the event node (using default values where required),</p></li>
+<li><p>Dispatch the event,</p></li>
+<li><p>Destroy the event node.</p></li>
+</ol>
+<p><span class="arg"><em>type</em></span> gives the event type.</p>
+<p>The following options are valid:</p>
+<dl>
+<span class="term"> <em>-bubbles</em></span><dd><p>Indicates whether the event bubbles.</p></dd>
+<span class="term"> <em>-cancelable</em></span><dd><p>Indicates whether the event can be cancelled.</p></dd>
+<span class="term"> <em>-relatedNode</em></span><dd><p>Gives a node to associate with the event.</p></dd>
+<span class="term"> <em>-prevValue</em></span><dd><p>Gives the previous value of the target node.</p></dd>
+<span class="term"> <em>-newValue</em></span><dd><p>Gives the new value of the target node.</p></dd>
+<span class="term"> <em>-attrName</em></span><dd><p>Gives the name of the attribute modified.</p></dd>
+</dl>
+</dd>
+</dl>
+</div>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id25649"></a>Errors</h2>
+<p>If an operation results in an error condition, an error message is 
+returned as a structured Tcl list.  The list has members as follows:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>{domain level code node line message int1 int2 string1 string2 string3}</pre></div></pre></div>
+<p>The format of the list is described in the TclXML manual page.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id25681"></a>Implementations</h2>
+<p>This section documents the various implmentations of the TclDOM API.</p>
+<div class="refsect2">
+<h3>
+<a name="id25698"></a>Tcl Implementation</h3>
+<p>The Tcl implementation is provided by the <tt>dom::tcl</tt> package.</p>
+<div class="refsect3">
+<h4>
+<a name="id25719"></a>Limitations</h4>
+<p>This implementation is not able to preform the following functions:</p>
+<ul>
+<li><p>Validation: DTD, XML Schema or RelaxNG validation are not supported.</p></li>
+<li><p>Character encodings: The TclDOM/tcl implementation itself does 
+not handle character encodings other than utf-8.  Character encodings 
+are handled by Tcl itself.</p></li>
+</ul>
+</div>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id25760"></a>libxml2 Implementation</h3>
+<p>The TclDOM/libxml2 implementation is a wrapper for the <a href="http://xmlsoft.org/">Gnome libxml2 library</a>.  It is provided by the <tt>dom::libxml2</tt> package.  It is a high-performance library, making use of Tcl objects for fast access to tree nodes.</p>
+<div class="refsect3">
+<h4>
+<a name="id25793"></a>Limitations</h4>
+<ul>
+<li><p>The TclXML/libxml2 parser must be used to parse an XML document.  It is not possible to use any other parser class.</p></li>
+<li><p>RELAX-NG validation is not yet supported.</p></li>
+<li><p>The importNode method has not been implemented.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div></body></html>

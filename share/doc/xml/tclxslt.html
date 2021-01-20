@@ -1,0 +1,315 @@
+<html><head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>TclXSLT</title>
+<link rel="stylesheet" href="tclxslt_files/tclxml.css">
+</head><body><div class="refentry">
+<h1 class="title"><a name="id18406">TclXSLT</a></h1>
+<h2>Contents</h2>
+<ul>
+<li><a href="#synopsis">Synopsis</a></li>
+<li><a href="#id18664">Description</a></li>
+<li><a href="#id18710">Packages and Namespaces</a></li>
+<li>
+<a href="#id18731">Commands</a><ul>
+<li><a href="#id18745">::xslt::compile</a></li>
+<li>
+<a href="#id18805">Stylesheet Command</a><ul>
+<li><a href="#id18828">Command Methods</a></li>
+<li><a href="#id19210">Stylesheet Parameters</a></li>
+</ul>
+</li>
+<li><a href="#id19288">::xslt::extension</a></li>
+<li><a href="#id19330">::xslt::security</a></li>
+</ul>
+</li>
+<li>
+<a href="#id19511">Extensions</a><ul>
+<li>
+<a href="#id19535">Implementing An Extension</a><ul>
+<li><a href="#id19594">Extension Functions</a></li>
+<li><a href="#id19619">Extension Elements</a></li>
+</ul>
+</li>
+<li><a href="#id19638">Using An Extension</a></li>
+</ul>
+</li>
+</ul>
+<div class="refnamediv">
+<span class="refname">::xslt::compile</span>, <span class="refname">::xslt::extension</span>, <span class="refname">::xslt::security</span>
+</div>
+<div class="refsynopsisdiv">
+<a name="synopsis"></a><h2>Synopsis</h2>
+<div class="cmdsynopsis" id="id18514">
+<a name="id18514"></a><span class="command" id="id18518"><a name="package_require_xslt"></a><tt>package require xslt</tt> </span>
+</div>
+<br><span class="pkgsynopsis"><pre>package require xslt ?3.2?</pre></span><div class="cmdsynopsis" id="id18540">
+<a name="id18540"></a><span class="command" id="id18544"><a name="__xslt__compile"></a><tt>::xslt::compile</tt> </span><em>doc</em>
+</div>
+<div class="cmdsynopsis" id="id18564">
+<a name="id18564"></a><span class="command" id="id18568"><a name="ssheet"></a><tt><em>ssheet</em></tt> </span><em>method</em> ?option value...? ?args...?</div>
+<div class="cmdsynopsis" id="id18610">
+<a name="id18610"></a><span class="command" id="id18613"><a name="__xslt__extension"></a><tt>::xslt::extension</tt> </span><span class="methodname">add</span><em>nsuri</em> <em>tcl-namespace</em>
+</div>
+<div class="cmdsynopsis" id="id18639">
+<a name="id18639"></a><span class="command" id="id18642"><a name="__xslt__security"></a><tt>::xslt::security</tt> </span><span class="methodname"><em>request</em></span><em>detail</em>
+</div>
+<h3>Tcl Namespace Usage</h3>
+<br><tt>::xslt</tt><p></p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id18664"></a>Description</h2>
+<p>TclXSLT is a wrapper for the <a href="http://xmlsoft.org/">Gnome libxslt library</a>
+ that allows an application to perform XSL transformations (XSLT).  The 
+package also provides a binding to the XSLT extension mechanism so that 
+XSLT extension may be implemented using Tcl scripts.</p>
+<p>Transformation only works with documents created by TclDOM/libxml2.</p>
+<p>The TclXSLT package makes extensive use of Tcl objects.  Compiled XSL
+ stylesheets are stored as the internal representation of a Tcl object. 
+ Source and result documents are accessed via TclDOM's C interface as 
+Tcl objects.  This allows the application to cache parsed XML documents 
+and compiled XSL stylesheets for better runtime performance.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id18710"></a>Packages and Namespaces</h2>
+<p>The TclXSLT package defines the <tt>xslt</tt> package and also a Tcl namespace using that name.</p>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id18731"></a>Commands</h2>
+<div class="refsect2">
+<h3>
+<a name="id18745"></a><strong>::xslt::compile</strong>
+</h3>
+<p>The <strong>::xslt::compile</strong> command compiles a stylesheet 
+document.  It returns a compiled stylesheet object and also defines a 
+Tcl command to access the stylesheet.  This Tcl command may be used to 
+transform XML documents.</p>
+<h4>Example</h4>
+<div class="example"><pre><div class="programlisting"><pre>set source_doc [::dom::libxml2::parse $XML]
+set ssheet_doc [::dom::libxml2::parse $XSLstylesheet]
+set ssheet [::xslt::compile $ssheet_doc]
+set result [$ssheet transform $source_doc]
+</pre></div></pre></div>
+<p>NB.  It is advisable to use the  <em>-baseuri</em> option when parsing the source and stylesheet documents to allow external resources to be resolved.</p>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id18805"></a>Stylesheet Command</h3>
+<p>The stylesheet command created by <strong>::xslt::compile</strong> command accesses a compiled stylesheet.</p>
+<div class="refsect3">
+<h4>
+<a name="id18828"></a>Command Methods</h4>
+<p>The following command methods may be used:</p>
+<dl>
+<span class="term"><span class="arg">cget</span> <span class="arg"><em>option</em></span></span><dd><p>Returns the value of an option.  See below for the list of valid options.</p></dd>
+<span class="term"><span class="arg">configure</span> <span class="arg"><em>option</em><em>value</em></span></span><dd>
+<p>Sets the value of an option.  Available options are as follows:</p>
+<dl>
+<span class="term"> <em>-indent</em></span><dd>
+<p>Specifies whether the output being produced by the stylesheet should 
+be idented (or "pretty-printed").  This is usually set by the 
+styesheet's <tt>xsl:output</tt> element.  The result is a boolean value.</p>
+<p>This is a read-only option.</p>
+</dd>
+<span class="term"> <em>-messagecommand</em><span class="arg"><em>script</em></span></span><dd>
+<p>This option specifies a Tcl command to be evaluated when a message is
+ produced by the stylesheet.  Messages may be produced when the 
+stylesheet detects an error during processing, or when the stylesheet 
+uses the <tt>xsl:message</tt> element.</p>
+<p>It is currently not possible to distinguish between an error message and a message produced using <tt>xsl:message</tt>.</p>
+</dd>
+<span class="term"> <em>-method</em></span><dd>
+<p>Specifies the output being produced by the stylesheet.  This is usually set by the styesheet's <tt>xsl:output</tt> element.  May have the value <span class="literal">xml</span>, <span class="literal">html</span>, <span class="literal">xhtml</span>, <span class="literal">text</span> or an empty string.</p>
+<p>If the result is an empty string, then the output method used depends
+ on the type of the result document.  If the result document is of type 
+"HTML" (ie. if [dom::node cget $resultdoc -nodeType] returns <span class="literal">HTMLdocument</span>), then the <span class="literal">html</span> output method should be used.  Otherwise the output method to use is <span class="literal">xml</span>.</p>
+<p>This is a read-only option.</p>
+</dd>
+<span class="term"> <em>-profilechannel</em></span><dd><p>Specifies the 
+name of a channel into which profiling information is written.  The 
+channel must have been opened for writing, or an error will be returned 
+when attempting a transformation.  Only file channels may be used and 
+only on Unix systems.</p></dd>
+<span class="term"> <em>-resulturi</em></span><dd>
+<p>Specifies the target URI for the transformation, ie. where the result will be written to.  The result document is <em>not</em> written to this URI automatically; the application should write the result document to this URI itself.</p>
+<p>Some transformation constructs resolve relative URIs against this 
+URI.  For example, a subsidiary result document produced using the <tt>document</tt> element.</p>
+</dd>
+</dl>
+</dd>
+<span class="term"><span class="arg">get</span> <span class="arg"><em>what</em></span></span><dd>
+<p>Returns information from the stylesheet.  The following values may be used for <span class="arg"><em>what</em></span>:</p>
+<dl>
+<span class="term"><span class="arg">parameters</span></span><dd>
+<p>Returns a Tcl list describing the parameters that the stylesheet 
+accepts.  Each member of the list is itself a Tcl list with three 
+members: <span class="literal">{name ns select}</span>.  <span class="literal">name</span> is the name of the parameter, <span class="literal">ns</span> is the XML namespace for the parameter and <span class="literal">select</span> is the value of the <tt>select</tt> attribute of the <tt>param</tt>
+ element, if any (ie. the default value of the parameter).  This 
+implementation is not able to return a default value set using the 
+content of the <tt>param</tt> element.</p>
+<p>All stylesheet parameters are returned by this method, including 
+those in included/imported stylesheets.  Where more than one parameter 
+is defined with the same name, only the parameter with the highest 
+import precedence is included in the returned list.</p>
+</dd>
+</dl>
+</dd>
+<span class="term"><span class="arg">transform</span> <span class="arg"><em>source</em></span> "<span class="arg"><em>name</em></span> | <span class="arg"><em>value</em></span>"</span><dd><p>Performs
+ an XSL transformation on the given source document.  Stylesheet 
+parameters may be specified as name-value pairs.  The return result is 
+the DOM token for the result document.</p></dd>
+</dl>
+</div>
+<div class="refsect3">
+<h4>
+<a name="id19210"></a>Stylesheet Parameters</h4>
+<p>Any number of name-value pairs may be specified as arguments to the <strong><em>stylesheet</em> transform</strong> method.  These are passed as values for parameters in the stylesheet.  <tt>libxslt</tt>
+ interprets the values as XPath expressions, where the context node is 
+the root node for the source document.  To pass a value as a string it 
+must be XPath-quoted, for example</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>set library "Gnome libxslt"
+$ssheet transform $source_doc \
+	library '$library' \
+	author "'Daniel Veillard'" \
+	node {/*/Element[3]}
+</pre></div></pre></div>
+</div>
+<p>Following is an example of how to use the <strong><em>stylesheet</em> transform</strong> method.</p>
+<h4>Example</h4>
+<div class="example"><pre><div class="programlisting"><pre>set source_doc [::dom::libxml2::parse $XML]
+set ssheet_doc [::dom::libxml2::parse $XSLstylesheet]
+set ssheet [::xslt::compile $ssheet_doc]
+set result_doc [$ssheet transform $source_doc]
+set result_xml [::dom::libxml2::serialize $result_doc \
+    -method [$ssheet cget -method]]
+</pre></div></pre></div>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id19288"></a><strong>::xslt::extension</strong>
+</h3>
+<p>The <strong>::xslt::extension</strong> command is used to manage extensions of the <tt>libxslt</tt> library.  The <span class="methodname">add</span> is used to register an extension.  The <span class="methodname">remove</span> is used to unregister an extension.  See <a href="">EXTENSIONS</a> for more detail.</p>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id19330"></a><strong>::xslt::security</strong>
+</h3>
+<p>The <strong>::xslt::security</strong> command is a "call-in" used to 
+manage the security of a stylesheet performing a transformation.  The 
+TclXSLT package does not create this command.  A stylesheet may need to 
+perform an operation on an external resource, such as reading or writing
+ a file, or opening a network connection.  Before performing such an 
+operation, TclXSLT will invoke the <strong>::xslt::security</strong> 
+command.  It interprets the result of the command as a boolean value, 
+and only if the "true" value is returned will it instruct the <tt>libxslt</tt> library to continue.</p>
+<p>TclXSLT will invoke the <strong>::xslt::security</strong> command in a different fashion depending on whether the current interpreter is safe or unsafe.</p>
+<ul>
+<li><p>If the current interpeter is unsafe (ie. it is a trusted 
+interpreter) then the command is invoked in the usual manner (see below 
+for arguments).  If the command does not exist then the value "true" is 
+the default, ie. the operation will be permitted.</p></li>
+<li><p>If the current interpreter is safe then the command is invoked as
+ a hidden command.  This is to ensure that the untrusted script cannot 
+intercept the invocation of the command.  If the hidden command does not
+ exist then the value "false" is the default, ie. the operation will not
+ be permitted.</p></li>
+</ul>
+<p>When the <strong>::xslt::security</strong> command is invoked two arguments are appended:</p>
+<div class="cmdsynopsis" id="id19414">
+<a name="id19414"></a><tt>::xslt::security</tt> <span class="methodname"><em>request</em></span><em>detail</em>
+</div>
+<dl>
+<span class="term"><span class="methodname"><em>request</em></span></span><dd>
+<p>This indicates the operation being requested and may have one of the following values:</p>
+<ul>
+<li><p><span class="literal">readfile</span></p></li>
+<li><p><span class="literal"></span></p></li>
+<li><p><span class="literal"></span></p></li>
+<li><p><span class="literal"></span></p></li>
+<li><p><span class="literal"></span></p></li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+<div class="refsect1">
+<h2>
+<a name="id19511"></a>Extensions</h2>
+<p>The TclXSLT package allows an application to bind Tcl scripts to the extension mechanism of <tt>libxslt</tt>.
+  This means that Tcl scripts may provide the implementation of an XSLT 
+extension element or function.  The binding is achieved to associating a
+ Tcl namespace with an XML namespace.</p>
+<div class="refsect2">
+<h3>
+<a name="id19535"></a>Implementing An Extension</h3>
+<p>The Tcl application uses the <strong>::xslt::extension add</strong> 
+command to register an extension.  An XML Namespace for the extension is
+ specified as an argument, along with a Tcl namespace that will provide 
+implementations of extension elements and functions.  For example,</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>::xslt::extension add http://tclxml.sourceforge.net/Example ::example
+</pre></div></pre></div>
+<p>Everytime the <strong>::xslt::transform</strong> command is executed,
+ a newly-created XSLT engine is initialized.  For each registered 
+extension, every procedure in the associated Tcl namespace is defined in
+ the XSLT engine as either an extension element or an extension 
+function.  The procedure is defined as an extension function if it has a
+ variable argument list, otherwise it is defined as an extension 
+element.  The procedure name is used as the local part of the extension 
+name.  For example,</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>namespace eval example {
+    namespace export myfunc myelement
+}
+
+proc example::myfunc {name args} {
+    global app
+    return $app($name)
+}
+proc example::myelement {node} {
+    global app
+    return $app([dom::libxml2::node cget $node -nodeName])
+}
+</pre></div></pre></div>
+<p>"myfunc" is defined as an extension function and "myelement" is defined as an extension element.</p>
+<div class="refsect3">
+<h4>
+<a name="id19594"></a>Extension Functions</h4>
+<p>The arguments to an extension function are converted to a string value and then passed as parameters to the Tcl procedure.</p>
+<p>The return result of the Tcl procedure becomes the return value of 
+the extension function.  The type of the result is preserved where 
+possible, otherwise it is converted to a string value.</p>
+</div>
+<div class="refsect3">
+<h4>
+<a name="id19619"></a>Extension Elements</h4>
+<p>Extension elements have not been implemented in TclXSLT v3.2.</p>
+</div>
+</div>
+<div class="refsect2">
+<h3>
+<a name="id19638"></a>Using An Extension</h3>
+<p>To invoke an extension in an XSL stylesheet, use the normal XSLT 
+extension mechanism.  The XML Namespace matches the extension to the 
+registered Tcl namespace (NB. the stylesheet author is free to choose 
+any prefix for the extension namespace).  For example,</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>&lt;xsl:stylesheet version='1.0'
+	xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
+	xmlns:eg='http://tclxml.sourceforge.net/Example'&gt;
+
+  &lt;xsl:template match='/'&gt;
+    &lt;xsl:text&gt;Result of calling extension is "&lt;/xsl:text&gt;
+    &lt;xsl:value-of select='eg:myfunc("foo")'/&gt;
+    &lt;xsl:text&gt;".
+&lt;/xsl:text&gt;
+  &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;
+</pre></div></pre></div>
+<p>This stylesheet would result in the following Tcl script being evaluated:</p>
+<div class="informalexample"><pre><div class="programlisting"><pre>::example::myfunc foo
+</pre></div></pre></div>
+</div>
+</div>
+</div></body></html>

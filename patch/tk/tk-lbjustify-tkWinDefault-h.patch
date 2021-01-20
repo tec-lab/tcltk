@@ -1,0 +1,12 @@
+*** tkWinDefault.h_ori	Sat Nov 12 23:04:34 2011
+--- tkWinDefault.h	Thu Dec  1 11:19:31 2011
+***************
+*** 227,232 ****
+--- 227,233 ----
+  #define DEF_LISTBOX_RELIEF		"sunken"
+  #define DEF_LISTBOX_SCROLL_COMMAND	""
+  #define DEF_LISTBOX_LIST_VARIABLE	""
++ #define DEF_LISTBOX_JUSTIFY             "left"
+  #define DEF_LISTBOX_SELECT_COLOR	SELECT_BG
+  #define DEF_LISTBOX_SELECT_MONO		BLACK
+  #define DEF_LISTBOX_SELECT_BD		"0"

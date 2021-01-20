@@ -1,0 +1,26 @@
+## Parameters
+LIB = libxcursor.so
+SOURCES.c = xcursor.c
+SOURCES.h = xcursor.h
+OBJECTS   = $(SOURCES.c:%.c=%.o)
+INCLUDES  = -I"$(INSTALLDIR)/include"
+LDLIBS  = -lXcursor -ltk8.6
+LDFLAGS = -L"$(INSTALLDIR)/lib"
+
+## Compiler flags
+CFLAGS += -g -fPIC
+CC = gcc
+
+## Targets
+all:		$(LIB)
+
+$(OBJECTS):	$(SOURCES.c)
+
+%.o: %.c
+		$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(LIB):		$(OBJECTS)
+		$(CC) -shared $(OBJECTS) -o $(LIB) $(LDFLAGS) $(LDLIBS)
+
+clean:
+		$(RM) $(OBJECTS) $(LIB)

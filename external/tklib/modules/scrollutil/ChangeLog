@@ -1,0 +1,362 @@
+2020-12-09  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollarea.tcl: Trace procedure slightly improved.
+
+2020-11-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollableframe.html: Slightly improved.
+
+2020-11-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/scaleutil.tcl: Corrected a typo.
+
+2020-11-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/scaleutil.tcl: Minor improvement.
+
+2020-11-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/wheelEvent.tcl: Minor improvement.
+
+2020-10-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html: Minor correction.
+
+2020-10-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/scaleutil.tcl: Improvements related to the X11 fonts.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+2020-10-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/utils/mwutil.tcl: Updated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+2020-09-24  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollableframe.html: Restored the mwutil::getScrollInfo2
+	* scripts/scrollsync.tcl:   command.
+	* scripts/utils/mwutil.tcl:
+
+2020-09-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollarea.tcl: Activated the scrollbar locking in unmapped
+	  state, too.
+
+	* doc/scrollarea.html: Description of the "-lockinterval" option
+	  slightly extended.
+
+2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Corrected the invocations of
+	  seerectSubCmd from within seeSubCmd.
+
+2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Set the recommended maximum for the value of the
+	  "-lockinterval" scrollarea option to 300.
+
+2020-09-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Minor improvements related to the
+	* doc/scrollableframe.html:    "seerect" subcommand.
+
+	* doc/scrollarea.html: Description of the "-lockinterval" option
+	  slightly extended.
+
+2020-09-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt: Corrected a typo.
+
+2020-09-15  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/scrollableframe.html:
+	* doc/wheelEvent.html:
+
+	* scripts/scrollableframe.tcl: Added the "seerect" scrollableframe
+	  subcommand.
+
+	* scrollutilCommon.tcl:   Added the command
+	* scripts/wheelEvent.tcl: "scrollutil::disableScrollingByWheel".
+
+	* scripts/tclIndex: Newly generated.
+
+2020-09-08  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-autohidescrollbars" scrollarea
+	  configuration option; the scrollableframe widget is now automatically
+	  registered for scrolling with the mouse wheel at creation time;
+	  reworked the invocations of "package vcompare", taking into account
+	  that Tcl versions earlier than 8.5 did not support the letters "a"
+	  and "b" in version numbers.
+
+	* scripts/utils:               Moved mwutil.tcl and scaleutil.tcl to
+	* scripts/utils/mwutil.tcl:    the new subdirectory utils and made them
+	* scripts/utils/scaleutil.tcl: to packages; updated mwutil.tcl to
+	* scripts/utils/pkgIndex.tcl:  version 2.17, like in Tablelist 6.11.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/ScrolledTablelist.png:
+
+	* ../../examples/scrollutil/*.tcl: With Tk 8.6.10 or later, the demo-
+	  scripts now fully support the Dark Mode appearance on Mac OS 10.14
+	  and later.
+
+2020-06-27 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:         Minor improvements.
+	* doc/scrollutil.html:
+
+2020-06-25 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scaleutil.tcl: Made sure that the scaled default width of the
+	  Tk core scrollbar on X11 won't get overridden by an unscaled resource
+	  database value.
+
+	* ../../examples/scrollutil/*FrmContent.tcl: Minor improvements.
+	* ../../examples/scrollutil/Sync*tcl:
+
+2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* ../../examples/scrollutil/*FrmDemo1.tcl:   Worked around an accuracy
+	* ../../examples/scrollutil/*FrmContent.tcl: problem related to the
+	  scaling on Cinnamon.
+
+2020-06-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.6.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mwutil.tcl: Updated.
+
+	* scripts/scaleutil.tcl: New file containing scaling-related stuff:
+	  getting the display's DPI scaling percentage; scaling the default
+	  width of the Tk core scrollbars on X11, the default width of the
+	  ttk::scrollbar widget in a few built-in themes, the arrows of the
+	  ttk::combobox, ttk::spinbox, and ttk::menubutton widgets, and the
+	  indicators of the ttk::checkbutton and ttk::radiobutton widgets;
+	  a workaround for a long-standing scaling-related bug in the
+	  implementation of the ttk::checkbutton and ttk::radiobutton widgets
+	  in the "vista" and "xpnative" themes.
+
+	* scripts/scrollarea.tcl: Added the read-only public variable
+	  "scrollutil::scalingpct" and set it to 100, 125, 150, 175, or 200,
+	  correspondig to the display's DPI scaling level.
+
+	* scripts/wheelEvent.tcl: Adapted the bindings to TIP 563, meaning that
+	  the mouse wheel now will scroll a horizontal or vertical scrollbar
+	  regardless of whether the "Shift" key is down or not.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.png Updated screenshots.
+
+	* ../../examples/scrollutil/*.tcl: Made the demo-scripts fully
+	  scaling-aware.
+
+2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.7 ========================
+	* 
+
+2020-02-06  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html: Minor improvements.
+
+2020-02-05  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/scrollarea.tcl: Improved the handling of the case that the
+	  scrollbar lock prevented a scrollbar of a scrollarea widget from
+	  being unmapped.
+
+	* scripts/wheelEvent.tcl: Creating mouse wheel event class bindings for
+	  the Tk core scrollbar widget on Windows and X11, which are missing on
+	  these platforms when using a Tk version earlier than 8.6.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes; several improvements.
+
+	* doc/ScrolledText.png: Added.
+
+	* ../../examples/scrollutil/*.tcl: Several improvements.
+
+	* ../../examples/scrollutil/ScrolledText.tcl: Added.
+
+2020-01-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt: Updated the version number.
+
+2020-01-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.4; updated the copyright
+	* COPYRIGHT.txt: information.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* README.txt:
+
+	* scripts/scrollarea.tcl: Added the command "scrollutil::getscrollarea";
+	  updated the copyright information.
+
+	* scripts/scrollsync.tcl: Added the command "scrollutil::getscrollsync";
+	  updated the copyright information.
+
+	* scripts/wheelEvent.tcl: Added the command
+	  "scrollutil::addMouseWheelSupport; created mouse wheel event class
+	  bindings for the ttk::scrollbar widget; automatically invoking
+	  "scrollutil::adaptWheelEventHandling" for the scrollbars of the
+	  scrollarea whose widget was passed to this command; added the missing
+	  pieces of code related to the bindings for mouse buttons 6 and 7 in
+	  Tk 8.7.a3 or later on X11; updated the copyright information.
+
+	* scripts/mwutil.tcl:          Minor improvemets; updated the copyright
+	* scripts/scrollableframe.tcl: information.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.html: Updated to reflect the changes; several improvements.
+
+	* ../../examples/scrollutil/*: Minor improvements; updated the copyright
+	  information.
+
+2019-12-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* ../../examples/scrollutil/SyncListboxes.tcl: Minor improvement.
+
+2019-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/*.png: Updated.
+
+2019-12-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.3.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollarea.tcl: Using ttk::scrollbar widgets on Mac OS X,
+	  too, provided that the Tk release is 8.6.10 or later.
+
+	* scripts/scrollsync.tcl: Important improvement related to the master
+	  widget.
+
+	* scripts/scrollableframe.tcl: Added the "scan" subcommand, along with
+	  mouse event bindings invoking the latter; significantly improved the
+	  handling of the "-width", "-height", "-borderwidth", and
+	  "-highlightthickness" options.
+
+	* scripts/wheelEvent.tcl: Added support for nested scrollable widget
+	  containers; improved the units computation for "(x|y)view scroll"
+	  within the bindings for mouse wheel events; for Tk 8.7.a3 and above
+	  on X11, added bindings for horizontal scrolling with the aid of the
+	  (virtual) mouse buttons 6 and 7.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/scrollutil/styleUtil.tcl: Added.
+
+	* ../../examples/scrollutil/*.tcl: Numerous improvements.
+
+2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:          Slightly extended.
+	* doc/scrollutil.html:
+
+2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/wheelEvent.html: Slightly extended.
+
+2019-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Improvement related to the "see"
+	  subcommand.
+
+	* doc/scrollableframe.html: Extended the description of the "see"
+	  subcommand.
+
+2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollableframe.html: Minor improvement.
+
+2019-10-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scripts/scrollableframe.tcl: Minor improvement.
+
+	* doc/scrollableframe.html: Minor correction.
+
+2019-10-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:        Bumped the version number to 1.2.
+	* scrollutil.tcl:
+	* scrollutil_tile.tcl:
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* scrollutilCommon.tcl: Bumped the version number to 1.2; no longer
+	  creating aliases in the "::tk" namespace for Tk commands for which
+	  that namespace already contains a command of the same name.
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/*.tcl: Added the scrollableframe widget; significant
+	  improvements and bug fixes related to the scrollarea and scrollsync
+	  widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/stylesheet.css: Updated.
+
+	* doc/*.html: Updated to reflect the changes; various improvements.
+
+	* doc/scrollableframe.html: Added.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/SuScrollableFrm*.tcl: Added.
+
+	* ../../examples/scrollutil/ScrollableFrm*.tcl: Updated and renamed to
+	  BwScrollableFrm*.tcl.
+
+	* ../../examples/scrollutil/ScrolledFrm*.tcl: Updated.
+
+2019-09-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* doc/scrollutil.html Slightly extended.
+
+2019-08-31  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* ../../examples/scrollutil/SyncListboxes.tcl Minor improvements.
+
+	* doc/SyncListboxes.png Updated.
+	* doc/scrollutil.html
+
+2019-08-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Added scrollutil to tklib.

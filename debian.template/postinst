@@ -1,0 +1,56 @@
+#!/bin/bash -e
+
+## get install info
+BUILDOS="%build_os%"
+BUILDKERNELNAME=%build_kernelname%
+BUILDKERNELRELEASE="%build_kernelrelease%"
+BUILDKERNELVERSION="%build_kernelversion%"
+BUILDNODENAME=%build_nodename%
+BUILDMACHINE=%build_machine%
+GITHASH=%git_hash%
+GITBRANCH=%git_branch%
+DEBNAME=%deb_name%
+DEBVERSION=%deb_version%
+DEBFILE=%deb_file%
+INSTDIR=%inst_dir%
+BINDIR=%bindir%
+
+## helper functions
+##
+##
+## helper functions
+
+case "$1" in
+    configure)
+        if [ -z "$2" ]; then
+            echo "Running $DEBNAME postinst '$1' ..."
+        else
+            OLDVERSION=$2
+            echo "Running $DEBNAME postinst '$1', old version $OLDVERSION ..."
+        fi
+
+        ## change owner and permissions
+        echo -n "Changing owner and file permissions ... "
+        chmod -R ugo-sw,ugo+rX $INSTDIR
+        chmod ugo+x $INSTDIR/bin/*
+        echo done
+        
+        ## change root path of execs
+        echo -n "Changing root path of executables and libraries ... "
+        for FILE in $(find $INSTDIR -type f -name '*.so' | xargs grep -l "/$BINDIR/lib"); do
+            chrpath -r $INSTDIR/lib $FILE | true
+        done
+        for FILE in $(find $INSTDIR -type f ! -name '*.*' | xargs grep -l "/$BINDIR/lib"); do
+            chrpath -r $INSTDIR/lib $FILE | true
+        done
+        for FILE in $INSTDIR/bin/tkcon; do
+            sed -i -e "s#/[a-zA-Z0-9_/-/.]*/$BINDIR/bin#$INSTDIR/bin#g" $FILE
+            sed -i -e "s#/[a-zA-Z0-9_/-/.]*/$BINDIR/lib#$INSTDIR/lib#g" $FILE
+        done
+        echo done
+
+        ;;
+esac
+
+## fini
+exit 0

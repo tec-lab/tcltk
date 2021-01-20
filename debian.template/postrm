@@ -1,0 +1,44 @@
+#!/bin/bash -e
+
+## get install info
+BUILDOS="%build_os%"
+BUILDKERNELNAME=%build_kernelname%
+BUILDKERNELRELEASE="%build_kernelrelease%"
+BUILDKERNELVERSION="%build_kernelversion%"
+BUILDNODENAME=%build_nodename%
+BUILDMACHINE=%build_machine%
+GITHASH=%git_hash%
+GITBRANCH=%git_branch%
+DEBNAME=%deb_name%
+DEBVERSION=%deb_version%
+DEBFILE=%deb_file%
+INSTDIR=%inst_dir%
+BINDIR=%bindir%
+CBOLD="\033[1m"
+CEND="\e[0m"
+
+case "$1" in
+    remove|purge|upgrade)
+        if [ "$1" == "upgrade" ]; then
+            NEWVERSION=$2
+            echo "Running $DEBNAME postrm '$1', new version $NEWVERSION ..."
+        else
+            echo "Running $DEBNAME postrm '$1' ..."
+        fi
+
+        ## remove old links and files
+        if [ "$1" == "remove" ] || [ "$1" == "purge" ]; then
+            ## remove desktop file
+            SITESDIR=/usr/share/applications
+            SITECONF=tkcon86.desktop
+            if [ -e $SITESDIR/$SITECONF ]; then
+                rm $SITESDIR/$SITECONF
+                echo "Removed desktop file"
+            fi
+        fi
+
+        ;;
+esac
+
+## fini
+exit 0

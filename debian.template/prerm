@@ -1,0 +1,30 @@
+#!/bin/bash -e
+
+## get install info
+BUILDOS="%build_os%"
+BUILDKERNELNAME=%build_kernelname%
+BUILDKERNELRELEASE="%build_kernelrelease%"
+BUILDKERNELVERSION="%build_kernelversion%"
+BUILDNODENAME=%build_nodename%
+BUILDMACHINE=%build_machine%
+GITHASH=%git_hash%
+GITBRANCH=%git_branch%
+DEBNAME=%deb_name%
+DEBVERSION=%deb_version%
+DEBRELEASE=%deb_release%
+DEBFILE=%deb_file%
+INSTDIR=%inst_dir%
+BINDIR=%bindir%
+
+case "$1" in
+    remove)
+	echo "Running $DEBNAME prerm '$1' ..."
+	;;
+    upgrade)
+	NEWVERSION=$2
+	echo "Running $DEBNAME prerm '$1', new version $NEWVERSION ..."
+	;;
+esac
+
+## fini
+exit 0

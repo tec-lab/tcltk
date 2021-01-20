@@ -1,0 +1,131 @@
+## Definition of global variables, used later with %{...} in the spec file
+%define vendor (c) 2014 SIEMENS Convergence Creators GmbH, Thomas Perschak
+%define name tcltk86
+%define version %rpm_version%
+%define release 1
+%define _prefix %prefix%
+%define summary TclTk runtime environment
+%define url www.siemens.at/space
+%define license Proprietary
+%define buildarch %build_machine%
+%define binfolder %bin_folder%
+   
+## global parameter
+Summary: %{summary}
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Prefix: %{_prefix}
+Vendor: %{vendor}
+URL: %{url}
+License: %{license}
+Group: GSE
+BuildArch: %{buildarch}
+Requires: chrpath awk sed
+## SLES package name is different, so skip it
+## libfftw3-3
+
+## information about rpm package
+%description
+TclTk runtime environment
+ Tcl libraries: %tcl_libraries%
+ Build kernel name: %build_kernelname%
+ Build kernel release: %build_kernelrelease%
+ Build kernel version: %build_kernelversion%
+ Build node name: %build_nodename%
+ Build GIT hash: %git_hash%
+ Build GIT branch: %git_branch%
+    
+## extract files for the rpm package from tar file
+%prep
+
+## perform action before installation
+%build
+
+## action which will be done during installation of the rpm package.
+%install
+mkdir -p %{buildroot}%{prefix}/%{name}
+cp -r %{_sourcedir}/* %{buildroot}%{prefix}/%{name}
+
+## clean up after build - does not affect uninstall behaviour
+%clean
+
+## run before post
+%pre
+CBOLD="\033[1m"
+CEND="\e[0m"
+echo Installing %{name} version %{version}-%{release} to %{prefix}/%{name} ...
+
+## action after installation of rpm package
+%post
+CBOLD="\033[1m"
+CEND="\e[0m"
+
+## helper functions
+##
+function installDesktop {
+    echo -n "Creating desktop files ... "
+    cp $STEMPDIR/$SITECONF.template $SITESDIR/$SITECONF
+    sed -i "s|%installdir%|%{prefix}/%{name}|g" $SITESDIR/$SITECONF
+    chmod u+w,a+x $SITESDIR/$SITECONF
+    ## replace user desktop files (also symbolic links)
+    for DPATH in $(ls /home); do
+        if [ ! -e /home/$DPATH/Desktop/$SITECONF ]; then continue; fi
+        FOWN=$(stat --format=%U:%G /home/$DPATH/Desktop/$SITECONF)
+        rm /home/$DPATH/Desktop/$SITECONF
+        cp -f $SITESDIR/$SITECONF /home/$DPATH/Desktop/ &> /dev/null | true
+        chown $FOWN /home/$DPATH/Desktop/$SITECONF &> /dev/null | true
+    done
+    ## copy icons
+    cp -f %{prefix}/%{name}/img/mainicon.png /usr/share/pixmaps/tkcon.png
+    cp -f %{prefix}/%{name}/img/mainicon.png /usr/share/pixmaps/wish.png
+    cp -f %{prefix}/%{name}/img/mainicon.png /usr/share/pixmaps/wish86.png
+    echo done
+}
+##
+## helper functions
+
+## change owner and permissions
+echo -n "Changing owner and file permissions ... "
+chown -R root:root %{prefix}/%{name}
+chmod -R ugo-sw,ugo+rX %{prefix}/%{name}
+chmod ugo+x %{prefix}/%{name}/bin/*
+echo done
+
+## change root path of execs
+echo -n "Changing root path of executables and libraries ... "
+for FILE in $(find %{prefix}/%{name} -type f -name '*.so' | xargs grep -l "/%{binfolder}/lib"); do
+    chrpath -r %{prefix}/%{name}/lib $FILE | true
+done
+for FILE in $(find %{prefix}/%{name} -type f ! -name '*.*' | xargs grep -l "/%{binfolder}/lib"); do
+    chrpath -r %{prefix}/%{name}/lib $FILE | true
+done
+for FILE in %{prefix}/%{name}/bin/tkcon; do
+    sed -i -e "s#/[a-zA-Z0-9_-/.]*\/%{binfolder}\/bin#%{prefix}\/%{name}\/bin#g" $FILE
+    sed -i -e "s#/[a-zA-Z0-9_-/.]*\/%{binfolder}\/lib#%{prefix}\/%{name}\/lib#g" $FILE
+done
+echo done
+
+## install desktop files
+STEMPDIR=%{prefix}/%{name}/share/config
+SITESDIR=/usr/share/applications
+SITECONF=tkcon86.desktop
+installDesktop
+
+
+## action before deinstallation starts
+%preun
+## remove desktop file
+SITESDIR=/usr/share/applications
+SITECONF=tkcon.desktop
+if [ -e $SITESDIR/$SITECONF ]; then
+    rm $SITESDIR/$SITECONF
+    echo "Removed desktop file"
+fi
+
+## all files which should be contained in the rpm package need to be added here
+%files
+%defattr(- , root, root, -)
+%{prefix}/
+
+

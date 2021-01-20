@@ -1,0 +1,249 @@
+#!/bin/bash -e
+## exit on non-zero status
+set -e
+
+## info
+VERSION=1.9
+MANUFACT="(c) 2019 ATOS"
+AUTHORS="Thomas Perschak"
+
+## defaults
+SCRIPTDIR=$(cd $(dirname $0); pwd)
+OUTDIR=$(readlink -m $SCRIPTDIR/../debian)
+
+## helper functions
+##
+function printHelp {
+    echo "Debian package compile script."
+    echo "$MANUFACT, $AUTHORS"
+    echo "Script version: $VERSION"
+    echo ""
+    echo "Syntax:"
+    echo " build-deb [<options>]"
+    echo "Options (optional):"
+    echo " -title <name>: Additional title to be added to the filename."
+    echo " -skey <key>: Key to sign the package."
+    echo " -debname <name>: Change the default debian package name. For the default value see the control file."
+    echo " -chlog: Create/update the changelog file."
+    echo " -nobranchname: Do not add the branch name to the output file."
+    echo " -allowdirty: Allow build of debians on dirty folders i.e. with untracked or uncommited files."
+    echo " -outdir <dir>: Specify the package output folder. Defaults to '$OUTDIR'."
+    echo " -help: Print this help text."
+}
+##
+## helper functions
+
+## allow to switch between release and debug compilation
+BINDIR=release
+
+## read command line parameters
+INDEX=1
+while [ $INDEX -le $# ]; do
+    case ${!INDEX} in
+        "-title")
+            let INDEX+=1
+            TITLE=${!INDEX}
+            ## replace white spaces
+            TITLE=$(echo $TITLE | sed "s/ /_/g")
+            ;;
+        "-debug")
+            DEBUG=1
+            BINDIR=debug
+            ;;
+        "-skey")
+            let INDEX+=1
+            FOPTIONS="$FOPTIONS -skey ${!INDEX}"
+            ;;
+        "-nochlog")
+            NOCHANGELOG=1
+            ;;
+        "-debname")
+            let INDEX+=1
+            DEBNAME=${!INDEX}
+            ## replace white spaces
+            DEBNAME=$(echo $DEBNAME | sed "s/ /_/g")
+            ;;
+        "-chlog")
+            CHANGELOG=1
+            ;;
+        "-nobranchname")
+            NOBRANCHNAME=1
+            ;;
+        "-outdir")
+            let INDEX+=1
+            OUTDIR=${!INDEX}
+            OUTDIR=$(readlink -m $OUTDIR)
+            OUTDIR=${OUTDIR%/}
+            ;;
+        "-keeptemp")
+            KEEPTEMP=1
+            ;;
+        "-allowdirty")
+            ALLOWDIRTY=1
+            ;;
+        "-help")
+            printHelp
+            exit 1
+            ;;
+        *)
+            echo "Unknown parameter '${!INDEX}', type -help for more information." >&2; exit 1
+            ;;
+    esac
+    let INDEX+=1
+done
+
+## check if gse4-service directory exists
+if [ ! -d $SCRIPTDIR/../gse4-service ]; then
+    echo "Missing ../gse4-service" >&2
+    echo "Clone gse4-service.git into ../gse4-service to get the build environment." >&2
+    exit 1
+fi
+
+## check if git folder is clean
+if [ -z "$ALLOWDIRTY" ]; then
+    if [ -n "$(git diff-index --quiet HEAD || echo untracked)" ]; then
+        echo "There are uncommited or untracked files in your repository. Denying debian build." >&2
+        exit 1
+    fi
+fi
+
+## collect build information
+echo -n "Collecting build information ... "
+
+## from control file
+if [ -z "$DEBNAME" ]; then DEBNAME=$(awk -F ' ' '{if($1=="Package:") print $2}' $SCRIPTDIR/debian.template/control); fi
+
+## get TCL version = version + patch + release
+echo "package re gse; puts \${tcl_patchLevel}.\${gse::tcl_release}" > $SCRIPTDIR/temp
+DEBVERSION=$($SCRIPTDIR/$BINDIR/bin/tclsh $SCRIPTDIR/temp)
+rm $SCRIPTDIR/temp
+
+## check if its a symbol or debug build, then include sources
+if [ $(echo $DEBVERSION | grep -c --regexp "[d]$") -eq 1 ]; then
+    mkdir -p $SCRIPTDIR/$BINFOLDER/sources
+    rsync -a -m --exclude-from $SCRIPTDIR/rsync.filter $SCRIPTDIR/dcompile/* $SCRIPTDIR/$BINFOLDER/sources
+elif [ $(echo $DEBVERSION | grep -c --regexp "[s]$") -eq 1 ]; then
+    mkdir -p $SCRIPTDIR/$BINFOLDER/sources
+    rsync -a -m --exclude-from $SCRIPTDIR/rsync.filter $SCRIPTDIR/rcompile/* $SCRIPTDIR/$BINFOLDER/sources
+else
+    rm -rf $SCRIPTDIR/$BINFOLDER/sources
+fi
+
+## get TCL pointer size which indicates 32bit or 64bit builds
+echo "puts \$tcl_platform(pointerSize)" > $SCRIPTDIR/temp
+POINTSIZE=$($SCRIPTDIR/$BINDIR/bin/tclsh $SCRIPTDIR/temp)
+rm $SCRIPTDIR/temp
+
+## get installed libraries
+TCLLIBS=$(cd $SCRIPTDIR/$BINDIR/lib; for i in $(ls -d */); do echo -n "${i%%/} "; done)
+
+## get build information
+BUILDKERNELNAME=$(uname)
+BUILDKERNELRELEASE=$(uname -r)
+BUILDKERNELVERSION=$(uname -v)
+BUILDNODENAME=$(uname -n)
+if [ -z "$WINDIR" ]; then
+    BUILDMACHINE=$(uname -m)
+    DEBARCH=$(dpkg-architecture -qDEB_BUILD_ARCH)
+    BUILDOS=$(lsb_release -sd)
+    BUILDOS="${BUILDOS//\"}"
+    BUILDOSFILE=$(lsb_release -sc)
+else
+    if [ "$POINTSIZE" -eq 8 ]; then
+        BUILDMACHINE="x86_64"
+    else
+        BUILDMACHINE=$(uname -m)
+    fi
+    BUILDOS=$(uname -s)
+    BUILDOS=${BUILDOS#*_}
+    if [ $(echo $BUILDOS | grep -c "5.1") -eq "1" ]; then
+        BUILDOSFILE="WinXP"
+    elif [ $(echo $BUILDOS | grep -c "5.2") -eq "1" ]; then
+        BUILDOSFILE="WinXP"
+    elif [ $(echo $BUILDOS | grep -c "6.1") -eq "1" ]; then
+        BUILDOSFILE="Win7"
+    elif [ $(echo $BUILDOS | grep -c "10.0") -eq "1" ]; then
+        BUILDOSFILE="Win10"
+    else
+        echo "Unknown OS '$BUILDOS'." >&2
+        exit 1
+    fi
+fi
+GITHASH=$(cd $SCRIPTDIR; git log -n 1 --pretty=format:%H)
+GITBRANCH=$(cd $SCRIPTDIR; git branch | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+GITBRANCH=$(echo $GITBRANCH | sed -e 's/ /_/g' | sed -e 's#/#.#g')
+
+## filename and location
+DEBFILE=$DEBNAME-$DEBVERSION
+if [ -z "$NOBRANCHNAME" ]; then DEBFILE=$DEBFILE.$GITBRANCH; fi
+DEBFILE=$DEBFILE.$BUILDOSFILE.$BUILDMACHINE
+if [ -n "$TITLE" ]; then DEBFILE=$DEBFILE.$TITLE; fi
+INSTDIR=/opt/$DEBNAME
+RELDIR=$OUTDIR/release
+
+## done collecting build infos
+echo done
+
+## update the changelog file
+if [ -n "$CHANGELOG" ]; then
+    $SCRIPTDIR/../gse4-service/git-changelog -indir $SCRIPTDIR
+    ## make a local copy
+    mkdir -p $SCRIPTDIR/share/changelog
+    cp $SCRIPTDIR/debian.template/changelog $SCRIPTDIR/share/changelog/${DEBNAME}.changelog
+fi
+
+## create release directory
+echo -n "Build up release folder ... "
+rm -fr $RELDIR
+mkdir -p $RELDIR
+mkdir -p $RELDIR$INSTDIR
+rsync -a $SCRIPTDIR/$BINDIR/* $RELDIR$INSTDIR
+mkdir -p $RELDIR/usr/share; mkdir -p $RELDIR/usr/share/pixmaps; mkdir -p $RELDIR/usr/share/applications
+cp -f $RELDIR$INSTDIR/img/mainicon.png $RELDIR/usr/share/pixmaps/tkcon86.png
+cp -f $RELDIR$INSTDIR/img/mainicon.png $RELDIR/usr/share/pixmaps/wish86.png
+cp -f $RELDIR$INSTDIR/share/config/tkcon86.desktop.template $RELDIR/usr/share/applications/tkcon86.desktop
+sed -i "s|%installdir%|$INSTDIR|g" $RELDIR/usr/share/applications/tkcon86.desktop
+echo -n "debian folder ... "
+mkdir -p $RELDIR/DEBIAN
+rsync -a $SCRIPTDIR/debian.template/* $RELDIR/DEBIAN/
+for PATTERN in "s|%deb_name%|$DEBNAME|g" "s|%deb_version%|$DEBVERSION|g" \
+    "s|%deb_file%|$DEBFILE|g" "s|%deb_arch%|$DEBARCH|g" \
+    "s|%tcl_libraries%|$TCLLIBS|g" \
+    "s|%build_os%|$BUILDOS|g" "s|%build_kernelname%|$BUILDKERNELNAME|g" \
+    "s|%build_kernelrelease%|$BUILDKERNELRELEASE|g" "s|%build_kernelversion%|$BUILDKERNELVERSION|g" \
+    "s|%build_nodename%|$BUILDNODENAME|g" "s|%build_machine%|$BUILDMACHINE|g" \
+    "s|%git_hash%|$GITHASH|g" "s|%git_branch%|$GITBRANCH|g" \
+    "s|%inst_dir%|$INSTDIR|g" "s|%bindir%|$BINDIR|g"; do
+    sed -i "$PATTERN" $RELDIR/DEBIAN/*
+done
+## do some cleanup
+(
+    cd $RELDIR
+    find ./ -name "*~" | xargs rm -f
+    cd $RELDIR$INSTDIR
+    rm -f  ./build-deb
+    rm -f  ./build-doxy.sh
+    rm -f  ./setgit
+    rm -fr ./debian*
+    rm -fr ./.git
+    rm -f  ./.gitignore
+    rm -f  ./.gitlab-ci.yml
+)
+echo done
+
+## plattform specific
+if [ -z "$WINDIR" ]; then
+    ## execute build
+    $SCRIPTDIR/../gse4-service/build-deb -indir $RELDIR -outdir $OUTDIR -file $DEBFILE $FOPTIONS
+else
+    ## name folder to release version
+    mv -f $RELDIR$INSTDIR $RELDIR$INSTDIR/../$DEBFILE | true
+    
+    ## compress to tgz file
+    echo -n "Compressing $(realpath --relative-to=$SCRIPTDIR $DEBFILE.tgz) ... "
+    tar -czf $OUTDIR/$DEBFILE.tgz -C $(readlink -m $RELDIR$INSTDIR/../$DEBFILE/..) $DEBFILE | true
+    echo done
+fi
+
+## delete old debspec
+if [ -z "$KEEPTEMP" ]; then rm -fr $RELDIR; fi

@@ -1,0 +1,31 @@
+#!/bin/bash -e
+
+## load defaults
+. ./common.sh
+	  	  
+## collect modules list
+MODULES="tcl tk tcllib tklib thread tkimg tbcload tkcon gse bwidget tdbc tdbcodbc tdbcpostgres tdbcmysql tdbcsqlite3 tcludp vectcl performance photoresize"
+
+## platform linux
+if [ -z "$WINDIR" ]; then
+    MODULES+=" xcursor sqlite3"
+else
+    ## platform windows
+    ## for 64bit platforms only
+    if [ "$BARCH" == "x86_64" ]; then
+        MODULES+=" sqlite3"
+    fi
+fi
+
+## start to compile
+for MODULE in $MODULES; do
+    bash -e ./compile-${MODULE}.sh "$@"
+    echo ""
+done
+
+## fini
+if [ -z "$SW_DEBUG" ]; then
+    echo "** Finished compile-base release."
+else
+    echo "** Finished compile-base debug."
+fi

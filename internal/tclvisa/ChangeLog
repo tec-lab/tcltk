@@ -1,0 +1,39 @@
+2012-07-23  Andrey Nakin  <andrey.nakin@gmail.com>
+
+	* Tclvisa 0.3.0 released
+
+	tclvisa is now compatible with Tcl8.4
+
+	Added support for the following VISA commands:
+		viAssertIntrSignal
+		viAssertTrigger
+		viAssertUtilSignal
+		viGpibCommand
+		viGpibControlATN
+		viGpibControlREN
+		viGpibPassControl
+		viGpibSendIFC
+
+	Following commands were added:
+		visa::last-error
+
+2012-01-14  Andrey Nakin  <andrey.nakin@gmail.com>
+
+	* Tclvisa 0.2.0 released
+	
+	Library supports following VISA commands:
+		viClear
+		viClose
+		viFindNext, viFindRsrc
+		viGetAttribute
+		viLock
+		viOpen
+		viOpenDefaultRM
+		viParseRsrc
+		viRead
+		viReadToFile
+		viSetAttribute
+		viUnlock
+		viWrite
+		viWriteFromFile
+

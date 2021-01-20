@@ -1,0 +1,38 @@
+#-------------------------------------------------------------------------------
+#
+# Makefile.win32
+#
+# build the TCL FFTW library with the MinGW toolchain for windows
+#
+# $Id: Makefile.win32,v 1.2 2010/12/02 14:17:07 schurek.p Exp $
+#
+#(c)2010 Peter Schurek
+#-------------------------------------------------------------------------------
+
+# MinGW C compiler
+CC = g++.exe
+
+# We use includes from the compiled interpreter
+TCL_INC = -I"$(INSTALLDIR)/include"
+TCL_LIB = -L"$(INSTALLDIR)/bin" -ltcl86
+
+# Include and library paths for the FFTW DLL
+FFTW_DIR = ./libfftw
+FFTW_INC = -I$(FFTW_DIR)
+FFTW_LIB = -L$(FFTW_DIR) -lfftw3-3
+
+.PHONY : all clean
+
+all : tclfftw.dll
+
+interpolator.o : interpolator.c++
+	$(CC) $(CCFLAGS) -O2 -Wall -g $(FFTW_INC) $(TCL_INC) -c interpolator.c++ -o interpolator.o
+
+tclfftw.o : tclfftw.c++ interpolator.h
+	$(CC) $(CCFLAGS) -O2 -Wall -g $(FFTW_INC) $(TCL_INC) -c tclfftw.c++ -o tclfftw.o
+
+tclfftw.dll : tclfftw.o interpolator.o
+	$(CC) $(CCFLAGS) -mthreads -static-libgcc -static-libstdc++ -shared tclfftw.o interpolator.o $(TCL_LIB) $(FFTW_LIB) -o tclfftw.dll
+
+clean :
+	cmd /c del *.o

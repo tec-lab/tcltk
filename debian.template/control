@@ -1,0 +1,21 @@
+Package: tcltk86
+Version: %deb_version%
+Release: 1
+Pre-Depends: chrpath, awk, sed, libpq5
+Depends: libfftw3-3
+Maintainer: (c) 2020 ATOS, Thomas Perschak
+Section: GSE
+Homepage: http://www.atos.net
+Tag: gse, scoe, tcl, tcltk
+Kernel-Version: %build_kernelversion%
+Architecture: %deb_arch%
+Description: TclTk runtime environment
+ Build Tcl libraries: %tcl_libraries%
+ Build OS: %build_os%
+ Build kernel name: %build_kernelname%
+ Build kernel release: %build_kernelrelease%
+ Build kernel version: %build_kernelversion%
+ Build node name: %build_nodename%
+ Build GIT hash: %git_hash%
+ Build GIT branch: %git_branch%
+

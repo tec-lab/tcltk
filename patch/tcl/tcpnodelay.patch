@@ -1,0 +1,76 @@
+--- external/tcl/generic/tclIO.c	2018-05-23 22:18:11.074112219 +0200
++++ ../tclIO.c	2018-05-23 22:17:02.787636168 +0200
+@@ -15,6 +15,47 @@
+ #include "tclInt.h"
+ #include "tclIO.h"
+ #include <assert.h>
++#ifdef unix
++    #include <netinet/tcp.h>
++#endif
++
++typedef struct TcpState TcpState;
++
++typedef struct TcpFdList {
++    TcpState *statePtr;
++    int fd;
++    struct TcpFdList *next;
++} TcpFdList;
++
++struct TcpState {
++    Tcl_Channel channel;	/* Channel associated with this file. */
++    TcpFdList fds;		/* The file descriptors of the sockets. */
++    int flags;			/* ORed combination of the bitfields defined
++				 * below. */
++    int interest;		/* Event types of interest */
++
++    /*
++     * Only needed for server sockets
++     */
++
++    Tcl_TcpAcceptProc *acceptProc;
++                                /* Proc to call on accept. */
++    ClientData acceptProcData;  /* The data for the accept proc. */
++
++    /*
++     * Only needed for client sockets
++     */
++
++    struct addrinfo *addrlist;	/* Addresses to connect to. */
++    struct addrinfo *addr;	/* Iterator over addrlist. */
++    struct addrinfo *myaddrlist;/* Local address. */
++    struct addrinfo *myaddr;	/* Iterator over myaddrlist. */
++    int filehandlers;           /* Caches FileHandlers that get set up while
++                                 * an async socket is not yet connected. */
++    int connectError;           /* Cache SO_ERROR of async socket. */
++    int cachedBlocking;         /* Cache blocking mode of async socket. */
++};
++
+ 
+ /*
+  * For each channel handler registered in a call to Tcl_CreateChannelHandler,
+@@ -7954,7 +7993,16 @@
+ 
+     len = strlen(optionName);
+ 
+-    if (HaveOpt(2, "-blocking")) {
++    if (HaveOpt(3, "-nodelay")) {
++        TcpState *tcpData = (TcpState*)chanPtr->instanceData;
++	int newMode;
++
++	if (Tcl_GetBoolean(interp, newValue, &newMode) == TCL_ERROR) {
++	    return TCL_ERROR;
++	}
++        setsockopt(tcpData->fds.fd, IPPROTO_TCP, TCP_NODELAY, &newMode, sizeof(newMode));
++
++    } else if (HaveOpt(2, "-blocking")) {
+ 	int newMode;
+ 
+ 	if (Tcl_GetBoolean(interp, newValue, &newMode) == TCL_ERROR) {
+@@ -10148,6 +10196,7 @@
+     }
+     return TCL_OK;
+ }
++
+ 
+ /*
+  *----------------------------------------------------------------------

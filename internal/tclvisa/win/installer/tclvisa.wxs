@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<?include tclvisa.wxi ?>
+
+  <Product
+		Id="$(var.ProductCode)" 
+		Name="$(var.ProductName)" 
+		Language="1033"
+		Version="$(var.ProductVersion)" 
+		Manufacturer="$(var.Manufacturer)" 
+		UpgradeCode="$(var.UpgradeCode)">
+
+    <Package 
+			InstallerVersion="200" 
+			Compressed="yes" 
+			Platform="$(env.TCLVISA_PLATFORM)"
+			InstallPrivileges="elevated"
+	/>
+    <Media Id="1" Cabinet="tclvisa.cab" EmbedCab="yes" />
+
+	<Directory Id="TARGETDIR" Name="SourceDir">
+		<Directory Id="TCLDIR">
+			<Directory Id="TclLib" Name="lib">
+				<Directory Id="INSTALLLOCATION" Name="$(var.ProductName)$(var.ProductVersion)">
+					<Component Id="MainComponent" Guid="452ffcde-310d-626d-9479-91490000976e">
+						<File DiskId="1" Source="../$(env.TCLVISA_PLATFORM)/$(var.ExecutableName)"/>
+						<File DiskId="1" Source="../pkgIndex.tcl"/>
+						<File DiskId="1" Source="License.rtf"/>
+						<File DiskId="1" Source="../../license.terms"/>
+					</Component>
+					<Directory Id="DocDir" Name="doc">
+						<Component Id="Manual" Guid="fbd1f3fa-7140-86b0-be38-ba5700009826">
+							<File DiskId="1" Source="$(var.ManualName)" />
+						</Component>
+					</Directory>
+					<Directory Id="DemoDir" Name="demo">
+						<Component Id="DemoScripts" Guid="e2dcb4c2-83ac-ff23-7685-b7cc00001756">
+							<File DiskId="1" Source="../../demo/exclusive-lock.tcl" />
+							<File DiskId="1" Source="../../demo/fconfigure.tcl" />
+							<File DiskId="1" Source="../../demo/identify.tcl" />
+							<File DiskId="1" Source="../../demo/last-error.tcl" />
+						</Component>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+	</Directory>
+
+    <Feature Id="Complete" Title="Binaries &amp; Documentation" Level="1" Absent="disallow" AllowAdvertise="no">
+      <ComponentRef Id="MainComponent" />
+      <ComponentRef Id="Manual" />
+      <ComponentRef Id="DemoScripts" />
+    </Feature>
+
+	<?if $(env.TCLVISA_PLATFORM) = x64 ?>
+		<?define Win64Registry = "yes" ?>
+	<?else?>
+		<?define Win64Registry = "no" ?>
+	<?endif?>
+
+	<!-- Current ActiveTcl version stored in HKCU registry branch -->
+	<Property Id="ACTIVETCLVERSIONHKCU">
+		<RegistrySearch
+			Id="RS.ActiveTclVersionHKCU"
+			Root="HKCU"			
+			Key="Software\ActiveState\ActiveTcl"
+			Name="CurrentVersion"
+			Type="raw"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	<!-- Current ActiveTcl version stored in HKLM registry branch -->
+	<Property Id="ACTIVETCLVERSIONHKLM">
+		<RegistrySearch
+			Id="RS.ActiveTclVersionHKLM"
+			Root="HKLM"			
+			Key="SOFTWARE\ActiveState\ActiveTcl"
+			Name="CurrentVersion"
+			Type="raw"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	<!-- Path to ActiveTcl stored in HKCU registry branch -->
+	<Property Id="ACTIVETCLDIRHKCU">
+		<RegistrySearch
+			Id="RS.ActiveTclDirHKCU"
+			Root="HKCU"			
+			Key="Software\ActiveState\ActiveTcl\[ACTIVETCLVERSIONHKCU]"
+			Type="directory"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	<!-- Path to ActiveTcl stored in HKLM registry branch -->
+	<Property Id="ACTIVETCLDIRHKLM">
+		<RegistrySearch
+			Id="RS.ActiveTclDirHKLM"
+			Root="HKLM"			
+			Key="Software\ActiveState\ActiveTcl\[ACTIVETCLVERSIONHKLM]"
+			Type="directory"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	<!-- Path to Cygwin stored in HKCU registry branch -->
+	<Property Id="CYGWINDIRHKCU">
+		<RegistrySearch
+			Id="RS.CygwinDirHKCU"
+			Root="HKCU"			
+			Key="SOFTWARE\Cygwin\setup"
+			Name="rootdir"
+			Type="directory"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	<!-- Path to Cygwin stored in HKLM registry branch -->
+	<Property Id="CYGWINDIRHKLM">
+		<RegistrySearch
+			Id="RS.CygwinDirHKLM"
+			Root="HKLM"			
+			Key="SOFTWARE\Cygwin\setup"
+			Name="rootdir"
+			Type="directory"
+			Win64="$(var.Win64Registry)"
+		/>
+	</Property>
+	
+	<Property Id="TCLDIR">
+		<!-- Should always return "not found" -->
+		<RegistrySearch
+			Id="RS.AlwaysFalse"
+			Root="HKLM"			
+			Key="_ABSENT_REGISTRY_BRANCH_"
+			Type="directory"
+		/>
+	</Property>
+
+	<!-- Actions set Tcl directory to proper Property's value -->
+	<CustomAction
+		Id="CA.Set_TCLDIR_From_ACTIVETCLDIRHKCU"
+		Directory="TCLDIR"
+		Value="[ACTIVETCLDIRHKCU]" />
+	<CustomAction
+		Id="CA.Set_TCLDIR_From_ACTIVETCLDIRHKLM"
+		Directory="TCLDIR"
+		Value="[ACTIVETCLDIRHKLM]" />
+	<CustomAction
+		Id="CA.Set_TCLDIR_From_CYGWINDIRHKCU"
+		Directory="TCLDIR"
+		Value="[CYGWINDIRHKCU]" />
+	<CustomAction
+		Id="CA.Set_TCLDIR_From_CYGWINDIRHKLM"
+		Directory="TCLDIR"
+		Value="[CYGWINDIRHKLM]" />
+
+	<InstallUISequence>
+		<Custom Action="CA.Set_TCLDIR_From_ACTIVETCLDIRHKCU" After="CostFinalize">NOT Installed AND ACTIVETCLDIRHKCU AND (NOT TCLDIR OR TCLDIR=TARGETDIR)</Custom>
+		<Custom Action="CA.Set_TCLDIR_From_ACTIVETCLDIRHKLM" After="CostFinalize">NOT Installed AND ACTIVETCLDIRHKLM AND (NOT TCLDIR OR TCLDIR=TARGETDIR)</Custom>
+		<Custom Action="CA.Set_TCLDIR_From_CYGWINDIRHKCU" After="CostFinalize">NOT Installed AND CYGWINDIRHKCU AND (NOT TCLDIR OR TCLDIR=TARGETDIR)</Custom>
+		<Custom Action="CA.Set_TCLDIR_From_CYGWINDIRHKLM" After="CostFinalize">NOT Installed AND CYGWINDIRHKLM AND (NOT TCLDIR OR TCLDIR=TARGETDIR)</Custom>
+	</InstallUISequence>
+
+	<InstallExecuteSequence>
+	</InstallExecuteSequence>
+
+    <Property Id="WixUI_InstallDir" Value="INSTALLLOCATION" ></Property>
+    <WixVariable Id="WixUILicenseRtf" Overridable="yes" Value="License.rtf"/>
+
+	<Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION"/>
+	<UIRef Id="WixUI_InstallDir" />
+
+  </Product>
+</Wix>

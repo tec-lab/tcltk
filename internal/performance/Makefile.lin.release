@@ -1,0 +1,26 @@
+## Parameters
+LIB = libperformance.so
+SOURCES.c = performance.c
+SOURCES.h = performance.h
+OBJECTS   = $(SOURCES.c:%.c=%.o)
+INCLUDES  = -I"$(INSTALLDIR)/include"
+LDLIBS  = -ltcl8.6
+LDFLAGS = -L"$(INSTALLDIR)/lib"
+
+## Compiler flags
+CFLAGS += -fPIC
+CC = gcc
+
+## Targets
+all:		$(LIB)
+
+$(OBJECTS):	$(SOURCES.c)
+
+%.o: %.c
+		$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(LIB):		$(OBJECTS)
+		$(CC) -shared $(OBJECTS) -o $(LIB) $(LDFLAGS) $(LDLIBS)
+
+clean:
+		$(RM) $(OBJECTS) $(LIB)

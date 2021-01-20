@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Include xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+<?define ProductName="tclvisa" ?>
+<?define ProductVersion="0.3.0" ?>
+<?define ProductCode="219fcc3f-44f8-df18-bf00-8ac00000971f"?>
+<?define UpgradeCode="a5ce5a94-ed48-8a36-9ad6-22ec0000974f"?>
+<?define Manufacturer="Andrey V. Nakin"?>
+<?define ExecutableName="tclvisa030.dll" ?>
+<?define ManualName="../../doc/tclvisa-0.3.0-manual.pdf" ?>
+
+</Include>
